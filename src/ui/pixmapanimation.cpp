@@ -1,0 +1,132 @@
+#include "pixmapanimation.h"
+#include "SkinBank.h"
+
+#include <QPainter>
+#include <QPixmapCache>
+#include <QDir>
+#include <QTimer>
+
+const int PixmapAnimation::S_DEFAULT_INTERVAL = 50;
+
+PixmapAnimation::PixmapAnimation(QGraphicsItem *parent, QGraphicsScene *scene)
+    : QGraphicsItem(parent, scene)
+{
+}
+
+void PixmapAnimation::advance(int phase) {
+    if (phase) ++current;
+    if (current >= frames.size()) {
+        current = 0;
+        emit finished();
+    }
+    update();
+}
+
+void PixmapAnimation::setPath(const QString &path) {
+    m_path = path;
+
+    frames.clear();
+    current = 0;
+
+    int i = 0;
+    QString pic_path = QString("%1%2%3").arg(path).arg(i++).arg(".png");
+    do {
+        frames << G_ROOM_SKIN.getPixmapFromFileName(pic_path, true);
+        pic_path = QString("%1%2%3").arg(path).arg(i++).arg(".png");
+    } while(QFile::exists(pic_path));
+}
+
+void PixmapAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
+    painter->drawPixmap(0, 0, frames.at(current));
+}
+
+QRectF PixmapAnimation::boundingRect() const{
+    return frames.at(current).rect();
+}
+
+bool PixmapAnimation::valid() {
+    return !frames.isEmpty();
+}
+
+void PixmapAnimation::timerEvent(QTimerEvent *) {
+    advance(1);
+}
+
+void PixmapAnimation::start(bool permanent, int interval) {
+    _m_timerId = startTimer(interval);
+    if (!permanent) connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
+}
+
+void PixmapAnimation::stop() {
+    killTimer(_m_timerId);
+}
+
+void PixmapAnimation::preStart() {
+    this->show();
+    this->startTimer(S_DEFAULT_INTERVAL * 0.7);
+}
+
+PixmapAnimation *PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, const QString &emotion) {
+    PixmapAnimation *pma = new PixmapAnimation(parent);
+    pma->setPath(QString("image/system/emotion/%1/").arg(emotion));
+    if (pma->valid()) {
+        //武器动画显示位置往右下角移一点，以免与"杀"的动画位置重叠
+        if (emotion.startsWith("weapon/")) {
+            pma->moveBy(30, 50);
+        }
+
+        if (emotion == "no-success") {
+            pma->moveBy(pma->boundingRect().width() * 0.25,
+                        pma->boundingRect().height() * 0.25);
+            pma->setScale(0.5);
+        } else if (emotion == "success") {
+            pma->moveBy(pma->boundingRect().width() * 0.1,
+                        pma->boundingRect().height() * 0.1);
+            pma->setScale(0.8);
+        } else if (emotion.contains("double_sword"))
+            pma->moveBy(13, -20);
+        else if (emotion.contains("fan") || emotion.contains("guding_blade"))
+            pma->moveBy(0, -20);
+        else if (emotion.contains("/spear"))
+            pma->moveBy(-20, -20);
+
+        pma->moveBy((parent->boundingRect().width() - pma->boundingRect().width()) / 2,
+                    (parent->boundingRect().height() - pma->boundingRect().height()) / 2);
+
+        pma->setZValue(20002.0);
+        if (emotion.contains("weapon")) {
+            pma->hide();
+            QTimer::singleShot(300, pma, SLOT(preStart()));
+        }
+        else {
+            if (emotion == "no-success" || emotion == "no-success") {
+                pma->startTimer(S_DEFAULT_INTERVAL * 0.7);
+            }
+            else {
+                pma->startTimer(S_DEFAULT_INTERVAL);
+            }
+        }
+
+        connect(pma, SIGNAL(finished()), pma, SLOT(deleteLater()));
+        return pma;
+    } else {
+        delete pma;
+        return NULL;
+    }
+}
+
+QPixmap PixmapAnimation::GetFrameFromCache(const QString &filename) {
+    QPixmap pixmap;
+    if (!QPixmapCache::find(filename, &pixmap)) {
+        if (pixmap.load(filename))
+            QPixmapCache::insert(filename, pixmap);
+    }
+    return pixmap;
+}
+
+int PixmapAnimation::GetFrameCount(const QString &emotion) {
+    QString path = QString("image/system/emotion/%1/").arg(emotion);
+    QDir dir(path);
+    dir.setNameFilters(QStringList("*.png"));
+    return dir.entryList(QDir::Files | QDir::NoDotAndDotDot).count();
+}

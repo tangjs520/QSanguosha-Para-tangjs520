@@ -1,0 +1,115 @@
+QProgressBar {
+    color: solid gray;
+    border: 2px solid gray;
+    border-radius: 5px;
+    background: transparent;
+    padding: 0px;
+    text-align: center;
+}
+
+QToolTip {
+    border: 2px solid darkkhaki;
+     padding: 1px;
+     border-radius: 3px;
+     opacity: 200;
+}
+
+QTextEdit {
+    border: 10px;
+    border-image: url(image/system/border.png) 10 10 10 10;
+    background-color: rgba(43, 45, 31, 114);
+}
+
+QFrame#RolesBox {
+    border: 10px;
+    border-image: url(image/system/border.png) 10 10 10 10;
+    background-color: rgba(43, 45, 31, 114);
+}
+
+QScrollBar#sgsVSB:vertical {
+    border: 1px solid grey;
+    background-color: rgba(43, 45, 31, 114);
+    width: 10px;
+    margin: 21px 0 21px 0;
+}
+QScrollBar#sgsVSB::handle:vertical {
+    background-color: rgb(95, 86, 63);
+    min-height: 20px;
+}
+QScrollBar#sgsVSB::add-line:vertical {
+    border: 1px solid grey;
+    background-color: rgba(43, 45, 31, 114);
+    height: 20px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+QScrollBar#sgsVSB::sub-line:vertical {
+    border: 1px solid grey;
+    background-color: rgba(43, 45, 31, 114);
+    height: 20px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+QScrollBar#sgsVSB::up-arrow:vertical {
+    border-image: url(image/system/button/scroll-up-arrow.png);
+}
+QScrollBar#sgsVSB::down-arrow:vertical {
+    border-image: url(image/system/button/scroll-down-arrow.png);
+}
+QScrollBar#sgsVSB::add-page:vertical, QScrollBar#sgsVSB::sub-page:vertical {
+    background: none;
+}
+
+QTextEdit[description = true] {
+    border: 10px;
+    border-image: none;
+    background-color: rgba(255, 255, 255, 255);
+}
+
+QLineEdit#chat_edit {
+    background-color: rgba(20, 20, 20, 200);
+    color: white;
+    border: 10px transparent;
+    height: 10px;
+    border-image: url(image/system/border.png) 10 10 10 10;
+}
+
+QMenu[private_pile = true] {
+    background-color: rgba(43, 63, 53, 200);
+    border-radius: 5px;
+    color: white;
+}
+
+QPushButton[private_pile = true] {
+    background-color: rgba(43, 63, 53, 200);
+    border-radius: 5px;
+    color: white;
+}
+
+QMenu[treasure = true] {
+    background-color: rgba(64, 52, 0, 200);
+    border-radius: 5px;
+    color: white;
+}
+
+QPushButton[treasure = true] {
+    background-color: rgba(64, 52, 0, 200);
+    border-radius: 5px;
+    color: white;
+}
+
+QLabel#GameTimer {
+    color: yellow;
+    font-family: "Times New Roman";
+    font-size: 13px;
+    font-style: normal;
+    font-weight: bold;
+    background: transparent;
+}
+
+QLabel#SkillLog {
+    background: rgba(0, 0, 0, 180);
+    border: 2px solid blue;
+    border-radius: 4px;
+    padding: 1px;
+}
