@@ -316,7 +316,7 @@ config = {
 		"liuxie+fuhuanghou",
 	},
 
-	removed_hidden_generals = {"sp_zhugejin","sp_dingfeng","sp_panfeng","sp_yuejin"
+	removed_hidden_generals = {"sp_zhugejin","sp_dingfeng","sp_panfeng","sp_yuejin","sp_hetaihou"
 	},
 
 	extra_hidden_generals = {
