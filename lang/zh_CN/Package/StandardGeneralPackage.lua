@@ -156,7 +156,7 @@ return {
 	["@jianyan-give"] = "你可以令一名男性角色获得 %arg[%arg2]",
 	["#QianxinWake"] = "%from 已受伤，触发“%arg”觉醒",
 	["#JianyanChoice"] = "%from 选择了 %arg",
-	["$JianyanAnimate"] = "image=image/animate/jianyan.png",
+	["$QianxinAnimate"] = "image=image/animate/qianxin.png",
 
 	-- 吴势力
 	["#sunquan"] = "年轻的贤君",
