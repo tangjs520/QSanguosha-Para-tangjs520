@@ -10,6 +10,7 @@ struct PhaseStruct;
 
 #include "player.h"
 #include "protocol.h"
+#include "structs.h"
 
 #include <QSemaphore>
 #include <QDateTime>
@@ -34,7 +35,7 @@ public:
     void broadcastSkillInvoke(const QString &card_name) const;
     int getRandomHandCardId() const;
     const Card *getRandomHandCard() const;
-    void obtainCard(const Card *card, bool unhide = true);
+    void obtainCard(const Card *card, bool unhide = true, int obtainReason = CardMoveReason::S_REASON_GOTCARD);
     void throwAllEquips();
     void throwAllHandCards();
     void throwAllHandCardsAndEquips();

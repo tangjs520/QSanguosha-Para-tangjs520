@@ -83,8 +83,8 @@ const Card *ServerPlayer::getRandomHandCard() const{
     return handcards.at(index);
 }
 
-void ServerPlayer::obtainCard(const Card *card, bool unhide) {
-    CardMoveReason reason(CardMoveReason::S_REASON_GOTCARD, objectName());
+void ServerPlayer::obtainCard(const Card *card, bool unhide, int obtainReason) {
+    CardMoveReason reason(obtainReason, objectName());
     room->obtainCard(this, card, reason, unhide);
 }
 
