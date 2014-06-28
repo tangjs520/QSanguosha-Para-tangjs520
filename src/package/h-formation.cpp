@@ -176,7 +176,7 @@ void HeyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
             forever {
                 cont_targets.append(players.at(index2));
                 if (index1 == index2) break;
-                index2++;
+                ++index2;
                 if (index2 >= players.length())
                     index2 -= players.length();
             }
@@ -628,40 +628,53 @@ public:
     }
 };
 
-class Qiluan: public TriggerSkill {
+class Qiluan : public TriggerSkill
+{
 public:
-    Qiluan(): TriggerSkill("qiluan") {
-        events << Death << EventPhaseStart;
+    Qiluan() : TriggerSkill("qiluan") {
+        events << Death << EventPhaseChanging;
         frequency = Frequent;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *target) const {
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
         if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
-            if (death.who != player)
+            if (death.who != player) {
                 return false;
+            }
             ServerPlayer *killer = death.damage ? death.damage->from : NULL;
             ServerPlayer *current = room->getCurrent();
 
             if (killer && current && (current->isAlive() || death.who == current)
-                && current->getPhase() != Player::NotActive)
+                && current->getPhase() != Player::NotActive) {
                 killer->addMark(objectName());
-        } else {
-            if (player->getPhase() == Player::NotActive) {
+            }
+        }
+        else {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
                 QList<ServerPlayer *> hetaihous;
+                QList<int> mark_count;
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->getMark(objectName()) > 0 && TriggerSkill::triggerable(p))
+                    if (p->getMark(objectName()) > 0 && TriggerSkill::triggerable(p)) {
                         hetaihous << p;
+                        mark_count << p->getMark(objectName());
+                    }
                     p->setMark(objectName(), 0);
                 }
 
-                foreach (ServerPlayer *p, hetaihous) {
-                    if (p->isAlive() && room->askForSkillInvoke(p, objectName()))
+                for (int i = 0; i < hetaihous.length(); ++i) {
+                    ServerPlayer *p = hetaihous.at(i);
+                    for (int j = 0; j < mark_count.at(i); ++j) {
+                        if (p->isDead() || !room->askForSkillInvoke(p, objectName())) {
+                            break;
+                        }
                         p->drawCards(3, objectName());
+                    }
                 }
             }
         }

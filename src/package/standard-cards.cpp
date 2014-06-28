@@ -261,10 +261,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         room->setEmotion(player, "killer");
 
     if (use.from->getMark("drank") > 0) {
-        const Card *drank_card = use.card->inherits("WrappedCard") ? this : use.card;
-        room->setCardFlag(drank_card, "drank");
-        drank_card->tag["drank"] = use.from->getMark("drank");
-
+        room->setCardFlag(use.card, "drank");
+        use.card->setTag("drank", use.from->getMark("drank"));
         room->setPlayerMark(use.from, "drank", 0);
     }
 
@@ -1321,10 +1319,10 @@ void WoodenOxCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
     ServerPlayer *target = room->askForPlayerChosen(source, targets, "wooden_ox", "@wooden_ox-move", true);
     if (target) {
         const Card *treasure = source->getTreasure();
-        if (treasure)
+        if (treasure) {
             room->moveCardTo(treasure, source, target, Player::PlaceEquip,
-            CardMoveReason(CardMoveReason::S_REASON_TRANSFER,
-            source->objectName(), "wooden_ox", QString()));
+                CardMoveReason(CardMoveReason::S_REASON_TRANSFER, source->objectName(), "wooden_ox", QString()));
+        }
     }
 }
 
@@ -1405,6 +1403,7 @@ WoodenOx::WoodenOx(Suit suit, int number)
 
 void WoodenOx::onUninstall(ServerPlayer *player) const{
     player->getRoom()->addPlayerHistory(player, "WoodenOxCard", 0);
+    Treasure::onUninstall(player);
 }
 
 StandardCardPackage::StandardCardPackage()

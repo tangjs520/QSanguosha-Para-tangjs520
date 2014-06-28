@@ -779,6 +779,14 @@ void Card::clearFlags() const{
     flags.clear();
 }
 
+void Card::setTag(const QString &key, const QVariant &data) const{
+    tag[key] = data;
+}
+
+void Card::removeTag(const QString &key) const{
+    tag.remove(key);
+}
+
 void Card::playTrickCardEmotion(Room *room, ServerPlayer *player) const
 {
     //“决斗、无懈可击、铁索连环”已经有各自的特效动画了，过滤之

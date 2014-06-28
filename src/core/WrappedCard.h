@@ -120,6 +120,9 @@ public:
     inline virtual void addSubcards(const QList<const Card *> &cards) { Q_ASSERT(false); }
     inline virtual void addSubcards(const QList<int> &subcards_list) { Q_ASSERT(false); }
 
+    virtual void setTag(const QString &key, const QVariant &data) const;
+    virtual void removeTag(const QString &key) const;
+
     inline virtual QString getType() const{ return m_card->getType(); }
     inline virtual QString getSubtype() const{ return m_card->getSubtype(); }
     inline virtual CardType getTypeId() const{ return m_card->getTypeId(); }
