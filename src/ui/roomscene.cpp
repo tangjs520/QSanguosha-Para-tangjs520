@@ -4084,16 +4084,16 @@ void RoomScene::doAnimation(int name, const QStringList &args) {
 }
 
 void RoomScene::showServerInformation() {
-    QDialog *dialog = new QDialog(main_window);
-    dialog->setWindowTitle(tr("Server information"));
+    QDialog dialog(main_window);
+    dialog.setWindowTitle(tr("Server information"));
 
     QHBoxLayout *layout = new QHBoxLayout;
     ServerInfoWidget *widget = new ServerInfoWidget;
-    widget->fill(ServerInfo, Config.HostAddress);
+    widget->fill(ServerInfo);
     layout->addWidget(widget);
-    dialog->setLayout(layout);
+    dialog.setLayout(layout);
 
-    dialog->show();
+    dialog.exec();
 }
 
 void RoomScene::surrender() {

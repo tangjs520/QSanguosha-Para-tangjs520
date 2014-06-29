@@ -15,6 +15,8 @@ struct ServerInfoStruct {
     //@return countdown for command in milliseconds.
     time_t getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance);
 
+    void clear();
+
     QString Name;
     QString GameMode;
     QString GameRuleMode;
@@ -46,7 +48,7 @@ class ServerInfoWidget: public QWidget {
 
 public:
     ServerInfoWidget(bool show_lack = false);
-    void fill(const ServerInfoStruct &info, const QString &address);
+    void fill(const ServerInfoStruct &info);
     void updateLack(int count);
     void clear();
 

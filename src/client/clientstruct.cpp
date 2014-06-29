@@ -91,6 +91,28 @@ bool ServerInfoStruct::parse(const QStringList &str) {
     return true;
 }
 
+void ServerInfoStruct::clear()
+{
+    Name.clear();
+    GameMode.clear();
+    GameRuleMode.clear();
+    OperationTimeout = 0;
+    NullificationCountDown = 0;
+    Extensions.clear();
+    RandomSeat = false;
+    EnableCheat = false;
+    FreeChoose = false;
+    Enable2ndGeneral = false;
+    EnableSame = false;
+    EnableBasara = false;
+    EnableHegemony = false;
+    EnableAI = false;
+    DisableChat = false;
+    MaxHpScheme = 0;
+    Scheme0Subtraction = 0;
+    DuringGame = false;
+}
+
 ServerInfoWidget::ServerInfoWidget(bool show_lack) {
     name_label = new QLabel;
     address_label = new QLabel;
@@ -139,13 +161,17 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack) {
     setLayout(layout);
 }
 
-void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address) {
-    name_label->setText(info.Name);
+void ServerInfoWidget::fill(const ServerInfoStruct &info) {
+    QString address;
+    ushort port;
+    Client::getHostAddressAndPort(address, port);
     address_label->setText(address);
+    port_label->setText(QString::number(port));
+
+    name_label->setText(info.Name);
     game_mode_label->setText(Sanguosha->getModeName(info.GameMode));
     int player_count = Sanguosha->getPlayerCount(info.GameMode);
     player_count_label->setText(QString::number(player_count));
-    port_label->setText(QString::number(Config.ServerPort));
     two_general_label->setText(info.Enable2ndGeneral ? tr("Enabled") : tr("Disabled"));
     same_label->setText(info.EnableSame ? tr("Enabled") : tr("Disabled"));
     basara_label->setText(info.EnableBasara ? tr("Enabled") : tr("Disabled"));
@@ -184,9 +210,6 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
             extension.remove("!");
 
         QString package_name = Sanguosha->translate(extension);
-        QCheckBox *checkbox = new QCheckBox(package_name);
-        checkbox->setChecked(checked);
-
         new QListWidgetItem(checked ? enabled_icon : disabled_icon, package_name, list_widget);
     }
 }

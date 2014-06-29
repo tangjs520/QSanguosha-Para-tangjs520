@@ -284,6 +284,7 @@ void Client::setup(const Json::Value &setup_str)
         return;
     }
 
+    ServerInfo.clear();
     if (ServerInfo.parse(setup_info)) {
         emit server_connected();
         notifyServer(S_COMMAND_TOGGLE_READY);

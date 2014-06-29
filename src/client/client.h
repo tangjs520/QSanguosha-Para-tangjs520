@@ -193,6 +193,8 @@ public:
 
     QList<int> getAvailableCards() const { return available_cards; }
 
+    static void getHostAddressAndPort(QString &address, ushort &port);
+
     // public fields
     bool m_isDiscardActionRefusable;
     bool m_canDiscardEquip;
@@ -254,8 +256,6 @@ private:
 
     bool _loseSingleCard(int card_id, CardsMoveStruct move);
     bool _getSingleCard(int card_id, CardsMoveStruct move);
-
-    void getHostAddressAndPort(QString &address, ushort &port);
 
 private slots:
     void processServerPacket(const QString &cmd);
