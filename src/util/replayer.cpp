@@ -1,6 +1,7 @@
 #include "replayer.h"
+#include "protocol.h"
 
-#include <QStringList>
+using namespace QSanProtocol;
 
 Replayer::Replayer(const ReplayFile &file, QObject *parent/* = 0*/)
     : QThread(parent), m_file(file), m_speed(1.0), m_paused(false),
@@ -74,8 +75,10 @@ void Replayer::run()
 {
     int lastMsecs = 0;
 
-    QStringList noDelayCommands;
-    noDelayCommands << "addPlayer" << "removePlayer" << "speak";
+    QList<CommandType> noDelayCommands;
+    noDelayCommands << S_COMMAND_ADD_PLAYER
+        << S_COMMAND_REMOVE_PLAYER
+        << S_COMMAND_SPEAK;
 
     int elapsedMsecs;
     QString command;
@@ -84,10 +87,10 @@ void Replayer::run()
         lastMsecs = elapsedMsecs;
 
         bool needDelay = true;
-        foreach (const QString &noDelayCmd, noDelayCommands) {
-            if (command.startsWith(noDelayCmd)) {
+        QSanGeneralPacket packet;
+        if (packet.parse(command.toStdString())) {
+            if (noDelayCommands.contains(packet.getCommandType())) {
                 needDelay = false;
-                break;
             }
         }
 

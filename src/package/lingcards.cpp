@@ -138,7 +138,7 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const {
         choicelist.append("role");
     }
     if (choicelist.isEmpty()) return;
-    QString choice = room->askForChoice(effect.from, "known_both", choicelist.join("+"), QVariant::fromValue((PlayerStar)player));
+    QString choice = room->askForChoice(effect.from, "known_both", choicelist.join("+"), QVariant::fromValue(player));
 
     LogMessage log;
     log.type = "$known_bothView";

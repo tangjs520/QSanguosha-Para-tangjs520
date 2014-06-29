@@ -539,14 +539,14 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     room->sendLog(log2);
 
     RoomThread *thread = room->getThread();
-    PindianStar pindian_star = &pindian_struct;
-    QVariant data = QVariant::fromValue(pindian_star);
+    PindianStruct *pindian_ptr = &pindian_struct;
+    QVariant data = QVariant::fromValue(pindian_ptr);
     thread->trigger(PindianVerifying, room, this, data);
 
-    PindianStar new_star = data.value<PindianStar>();
-    pindian_struct.from_number = new_star->from_number;
-    pindian_struct.to_number = new_star->to_number;
-    pindian_struct.success = (new_star->from_number > new_star->to_number);
+    PindianStruct *new_pindian_ptr = data.value<PindianStruct *>();
+    pindian_struct.from_number = new_pindian_ptr->from_number;
+    pindian_struct.to_number = new_pindian_ptr->to_number;
+    pindian_struct.success = (new_pindian_ptr->from_number > new_pindian_ptr->to_number);
 
     log.type = pindian_struct.success ? "#PindianSuccess" : "#PindianFailure";
     log.from = this;
@@ -565,8 +565,8 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     arg[6] = toJsonString(reason);
     room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
 
-    pindian_star = &pindian_struct;
-    data = QVariant::fromValue(pindian_star);
+    pindian_ptr = &pindian_struct;
+    data = QVariant::fromValue(pindian_ptr);
     thread->trigger(Pindian, room, this, data);
 
     moves.clear();

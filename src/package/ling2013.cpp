@@ -1186,7 +1186,7 @@ bool Neo2013ZhoufuCard::targetFilter(const QList<const Player *> &targets, const
 
 void Neo2013ZhoufuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.first();
-    target->tag["Neo2013ZhoufuSource" + QString::number(getEffectiveId())] = QVariant::fromValue((PlayerStar)source);
+    target->tag["Neo2013ZhoufuSource" + QString::number(getEffectiveId())] = QVariant::fromValue(source);
     target->addToPile("incantationn", this);
 }
 
@@ -1224,7 +1224,7 @@ public:
         if (triggerEvent == StartJudge) {
             int card_id = player->getPile("incantationn").first();
 
-            JudgeStar judge = data.value<JudgeStar>();
+            JudgeStruct *judge = data.value<JudgeStruct *>();
             judge->card = Sanguosha->getCard(card_id);
 
             LogMessage log;
@@ -1242,7 +1242,7 @@ public:
             room->setTag("SkipGameRule", true);
         } else {
             int id = player->getPile("incantationn").first();
-            PlayerStar zhangbao = player->tag["Neo2013ZhoufuSource" + QString::number(id)].value<PlayerStar>();
+            ServerPlayer *zhangbao = player->tag["Neo2013ZhoufuSource" + QString::number(id)].value<ServerPlayer *>();
             if (zhangbao && zhangbao->isAlive()){
                 RecoverStruct recover;
                 recover.who = zhangbao;
@@ -1269,9 +1269,9 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct *judge = data.value<JudgeStruct *>();
         int id = judge->card->getEffectiveId();
-        PlayerStar zhangbao = player->tag["Neo2013ZhoufuSource" + QString::number(id)].value<PlayerStar>();
+        ServerPlayer *zhangbao = player->tag["Neo2013ZhoufuSource" + QString::number(id)].value<ServerPlayer *>();
         if (zhangbao && TriggerSkill::triggerable(zhangbao)
             && zhangbao->askForSkillInvoke(objectName(), data))
             zhangbao->drawCards(2);
@@ -1953,7 +1953,7 @@ public:
             }
             if (equiplist.isEmpty() || !panfeng->askForSkillInvoke(objectName(), data))
                 return false;
-            int equip_index = room->askForChoice(panfeng, "kuangfu_equip", equiplist.join("+"), QVariant::fromValue((PlayerStar)target)).toInt();
+            int equip_index = room->askForChoice(panfeng, "kuangfu_equip", equiplist.join("+"), QVariant::fromValue(target)).toInt();
             const Card *card = target->getEquip(equip_index);
             int card_id = card->getEffectiveId();
 

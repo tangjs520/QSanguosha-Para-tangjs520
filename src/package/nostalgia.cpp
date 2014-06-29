@@ -18,7 +18,7 @@ public:
         if (player->getPhase() != Player::NotActive)
             return false;
 
-        CardStar card = NULL;
+        const Card *card = NULL;
         if (triggerEvent == CardUsed) {
             CardUseStruct card_use = data.value<CardUseStruct>();
             card = card_use.card;
@@ -410,7 +410,7 @@ void NosJiefanCard::use(Room *room, ServerPlayer *handang, QList<ServerPlayer *>
     if (!who) return;
 
     handang->setFlags("NosJiefanUsed");
-    room->setTag("NosJiefanTarget", QVariant::fromValue((PlayerStar)who));
+    room->setTag("NosJiefanTarget", QVariant::fromValue(who));
     bool use_slash = room->askForUseSlashTo(handang, current, "nosjiefan-slash:" + current->objectName(), false);
     if (!use_slash) {
         handang->setFlags("-NosJiefanUsed");
@@ -470,7 +470,7 @@ public:
                 log2.to << damage.to;
                 room->sendLog(log2);
 
-                PlayerStar target = room->getTag("NosJiefanTarget").value<PlayerStar>();
+                ServerPlayer *target = room->getTag("NosJiefanTarget").value<ServerPlayer *>();
                 if (target && target->getHp() > 0) {
                     LogMessage log;
                     log.type = "#NosJiefanNull1";
@@ -560,7 +560,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct *judge = data.value<JudgeStruct *>();
         if (judge->who != player)
             return false;
 
@@ -795,7 +795,7 @@ public:
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), extra->objectName());
 
             if (use.card->isKindOf("Collateral")) {
-                ServerPlayer *victim = extra->tag["collateralVictim"].value<PlayerStar>();
+                ServerPlayer *victim = extra->tag["collateralVictim"].value<ServerPlayer *>();
                 if (victim) {
                     LogMessage log;
                     log.type = "#CollateralSlash";
@@ -908,7 +908,7 @@ public:
                 } else {
                     room->setFixedDistance(player, fuhuanghou, 1);
                     QVariantList zhuikonglist = player->tag[objectName()].toList();
-                    zhuikonglist.append(QVariant::fromValue((PlayerStar)fuhuanghou));
+                    zhuikonglist.append(QVariant::fromValue(fuhuanghou));
                     player->tag[objectName()] = QVariant::fromValue(zhuikonglist);
                 }
             }
@@ -935,7 +935,7 @@ public:
         QVariantList zhuikonglist = player->tag["noszhuikong"].toList();
         if (zhuikonglist.isEmpty()) return false;
         foreach (QVariant p, zhuikonglist) {
-            PlayerStar fuhuanghou = p.value<PlayerStar>();
+            ServerPlayer *fuhuanghou = p.value<ServerPlayer *>();
             room->setFixedDistance(player, fuhuanghou, -1);
         }
         player->tag.remove("noszhuikong");
@@ -1009,7 +1009,7 @@ public:
 
     virtual void onDamaged(ServerPlayer *zhonghui, const DamageStruct &damage) const{
         if (damage.from && damage.from->hasEquip()) {
-            QVariant data = QVariant::fromValue((PlayerStar)damage.from);
+            QVariant data = QVariant::fromValue(damage.from);
             if (!zhonghui->askForSkillInvoke(objectName(), data))
                 return;
 
@@ -1281,7 +1281,7 @@ public:
             QString old_kingdom = to_modify->getKingdom();
             kingdomList.removeOne(old_kingdom);
             if (kingdomList.isEmpty()) return false;
-            QString kingdom = room->askForChoice(weiwudi, "nosguixin_kingdom", kingdomList.join("+"), QVariant::fromValue((PlayerStar)to_modify));
+            QString kingdom = room->askForChoice(weiwudi, "nosguixin_kingdom", kingdomList.join("+"), QVariant::fromValue(to_modify));
             room->setPlayerProperty(to_modify, "kingdom", kingdom);
 
             room->broadcastSkillInvoke(objectName(), index);
@@ -1394,7 +1394,7 @@ public:
         if (player->isKongcheng())
             return false;
 
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct *judge = data.value<JudgeStruct *>();
 
         QStringList prompt_list;
         prompt_list << "@nosguicai-card" << judge->who->objectName()
@@ -1944,12 +1944,12 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *zhangjiao, QVariant &data) const{
-        CardStar card_star = data.value<CardResponseStruct>().m_card;
+        const Card *card = data.value<CardResponseStruct>().m_card;
 
         //张角的出闪效果应该在发动技能"雷击"之前
-        if (card_star && card_star->isKindOf("Jink")) {
-            if (card_star->getSkillName() != "eight_diagram"
-                && card_star->getSkillName() != "bazhen") {
+        if (card && card->isKindOf("Jink")) {
+            if (card->getSkillName() != "eight_diagram"
+                && card->getSkillName() != "bazhen") {
                     room->setEmotion(zhangjiao, "jink");
                     room->getThread()->delay();
             }
@@ -2263,7 +2263,7 @@ bool NosGuhuoCard::targetFilter(const QList<const Player *> &targets, const Play
         return false;
     }
 
-    CardStar card = Self->tag.value("nosguhuo").value<CardStar>();
+    const Card *card = Self->tag.value("nosguhuo").value<const Card *>();
     return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 }
 
@@ -2277,7 +2277,7 @@ bool NosGuhuoCard::targetFixed() const{
         return true;
     }
 
-    CardStar card = Self->tag.value("nosguhuo").value<CardStar>();
+    const Card *card = Self->tag.value("nosguhuo").value<const Card *>();
     return card && card->targetFixed();
 }
 
@@ -2291,7 +2291,7 @@ bool NosGuhuoCard::targetsFeasible(const QList<const Player *> &targets, const P
         return true;
     }
 
-    CardStar card = Self->tag.value("nosguhuo").value<CardStar>();
+    const Card *card = Self->tag.value("nosguhuo").value<const Card *>();
     return card && card->targetsFeasible(targets, Self);
 }
 
@@ -2422,7 +2422,7 @@ public:
             return card;
         }
 
-        CardStar c = Self->tag.value("nosguhuo").value<CardStar>();
+        const Card *c = Self->tag.value("nosguhuo").value<const Card *>();
         if (c) {
             NosGuhuoCard *card = new NosGuhuoCard;
             if (!c->objectName().contains("slash"))

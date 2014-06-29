@@ -180,8 +180,8 @@ protected:
 
     // We use QList of cards instead of a single card as parameter here, just in case
     // we need to do group animation in the future.
-    virtual void addEquips(QList<CardItem *> &equips, bool isDashboard = true);
-    virtual QList<CardItem *> removeEquips(const QList<int> &cardIds, bool isDashboard = true);
+    virtual void addEquips(QList<CardItem *> &equips);
+    virtual QList<CardItem *> removeEquips(const QList<int> &cardIds);
     virtual void addDelayedTricks(QList<CardItem *> &judges);
     virtual QList<CardItem *> removeDelayedTricks(const QList<int> &cardIds);
     virtual void updateDelayedTricks();
@@ -239,7 +239,6 @@ protected:
 
     QGraphicsProxyWidget *_m_equipRegions[S_EQUIP_AREA_LENGTH];
     CardItem *_m_equipCards[S_EQUIP_AREA_LENGTH];
-    CardItem *_m_photo_treasure; // for photos to display treasure only
     QLabel *_m_equipLabel[S_EQUIP_AREA_LENGTH];
     QParallelAnimationGroup *_m_equipAnim[S_EQUIP_AREA_LENGTH];
     QMutex _mutexEquipAnim;
@@ -293,7 +292,9 @@ protected slots:
     virtual void onSkinChangingFinished();
 
     virtual void doAvatarHoverLeave() {}
-    virtual bool isItemUnderMouse(QGraphicsItem *item) { return item->isUnderMouse(); }
+    virtual bool isItemUnderMouse(QGraphicsItem *item) const {
+        return item->isUnderMouse();
+    }
 
 private:
     bool _startLaying();
@@ -301,7 +302,7 @@ private:
     int _lastZ;
     bool _allZAdjusted;
 
-    QString _m_treasureName;
+    QString m_treasureName;
 
     void attemptChangeTargetUseCard();
 

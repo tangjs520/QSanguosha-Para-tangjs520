@@ -138,14 +138,14 @@ public:
             //防止了伤害，DamageCaused处理函数均会返回true，就会直接break那个do-while循环）
             player->tag["jiushi_injuried"] = true;
 
-            player->tag["PredamagedFace"] = player->faceUp();
+            player->tag["PredamagedFace"] = !player->faceUp();
         } else if (triggerEvent == DamageComplete) {
             //如果伤害已被防止，则不能执行酒诗的第二个效果
             if (player->tag.contains("jiushi_injuried")) {
                 player->tag.remove("jiushi_injuried");
-                bool faceup = player->tag.value("PredamagedFace").toBool();
+                bool facedown = player->tag.value("PredamagedFace").toBool();
                 player->tag.remove("PredamagedFace");
-                if (!faceup && !player->faceUp() && player->askForSkillInvoke("jiushi", data)) {
+                if (facedown && !player->faceUp() && player->askForSkillInvoke("jiushi", data)) {
                     room->broadcastSkillInvoke("jiushi", 2);
                     player->turnOver();
                 }
@@ -510,7 +510,7 @@ bool XianzhenCard::targetFilter(const QList<const Player *> &targets, const Play
 void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     if (effect.from->pindian(effect.to, "xianzhen", NULL)) {
-        PlayerStar target = effect.to;
+        ServerPlayer *target = effect.to;
         effect.from->tag["XianzhenTarget"] = QVariant::fromValue(target);
         room->setPlayerFlag(effect.from, "XianzhenSuccess");
 
@@ -547,7 +547,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->tag["XianzhenTarget"].value<PlayerStar>() != NULL;
+        return target != NULL && target->tag["XianzhenTarget"].value<ServerPlayer *>() != NULL;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *gaoshun, QVariant &data) const{
@@ -556,7 +556,7 @@ public:
             if (change.to != Player::NotActive)
                 return false;
         }
-        ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<PlayerStar>();
+        ServerPlayer *target = gaoshun->tag["XianzhenTarget"].value<ServerPlayer *>();
         if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
             if (death.who != gaoshun) {
