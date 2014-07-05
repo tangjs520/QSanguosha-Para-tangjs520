@@ -734,6 +734,7 @@ public:
                     ++index;
                 }
                 use.from->tag["Jink_" + use.card->toString()] = QVariant::fromValue(jink_list);
+
                 if (play_effect) {
                     LogMessage log;
                     log.from = use.from;
@@ -745,8 +746,10 @@ public:
                     room->broadcastSkillInvoke(objectName(), 1);
                 }
             } else if (triggerEvent == TargetConfirmed && use.from->isFemale()) {
+                bool play_effect = false;
                 foreach (ServerPlayer *p, use.to) {
                     if (p == player) {
+                        play_effect = true;
                         if (jink_list.at(index).toInt() == 1)
                             jink_list.replace(index, QVariant(2));
                     }
@@ -754,14 +757,16 @@ public:
                 }
                 use.from->tag["Jink_" + use.card->toString()] = QVariant::fromValue(jink_list);
 
-                LogMessage log;
-                log.from = player;
-                log.arg = objectName();
-                log.type = "#TriggerSkill";
-                room->sendLog(log);
-                room->notifySkillInvoked(player, objectName());
+                if (play_effect) {
+                    LogMessage log;
+                    log.from = player;
+                    log.arg = objectName();
+                    log.type = "#TriggerSkill";
+                    room->sendLog(log);
+                    room->notifySkillInvoked(player, objectName());
 
-                room->broadcastSkillInvoke(objectName(), 2);
+                    room->broadcastSkillInvoke(objectName(), 2);
+                }
             }
         }
 
