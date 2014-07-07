@@ -1222,7 +1222,7 @@ public:
                         use.to.append(target);
                         room->sortByActionOrder(use.to);
                         data = QVariant::fromValue(use);
-                        room->getThread()->trigger(TargetConfirming, room, target, data);
+                        //room->getThread()->trigger(TargetConfirming, room, target, data); //rule
                     }
                 } else {
                     room->obtainCard(player, card, reason);
