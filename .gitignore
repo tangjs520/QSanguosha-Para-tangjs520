@@ -1,0 +1,10 @@
+image/
+audio/
+sanguosha.qm
+config.ini
+Qt*4.dll
+QSanguosha.exe
+QSanguosha
+QSanguosha.pro.user
+swig/sanguosha_wrap.cxx
+QSanguosha.pro
