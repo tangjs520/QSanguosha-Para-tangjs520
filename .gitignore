@@ -8,3 +8,6 @@ QSanguosha
 QSanguosha.pro.user
 swig/sanguosha_wrap.cxx
 QSanguosha.pro
+*.sdf
+*.suo
+*.opensdf
