@@ -22,3 +22,5 @@ lib/breakpad.lib
 lib/lua.lib
 QSanguosha.vcxproj.user
 /builds/vs2013/
+/Bin/
+card_intention.txt
