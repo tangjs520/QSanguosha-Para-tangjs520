@@ -11,3 +11,4 @@ QSanguosha.pro
 *.sdf
 *.suo
 *.opensdf
+extensions/
