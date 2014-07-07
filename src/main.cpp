@@ -96,22 +96,8 @@ int main(int argc, char *argv[]) {
 
     MainWindow main_window;
     Sanguosha->setParent(&main_window);
-/*
-    //修复“如果上次是最大化打开程序，下次再打开时，
-    //程序窗口的标题栏会有一部分越出到屏幕范围之外”的问题
-    QDesktopWidget *desk = QApplication::desktop();
-    QRect deskAvailRect = desk->availableGeometry();
-    QStyle *currentStyle = QApplication::style();
-    int titleBarHeight = currentStyle->pixelMetric(QStyle::PM_TitleBarHeight);
-    QSize mainWndSize = Config.value("WindowSize", QSize(1366, 706)).toSize();
-    QPoint mainWndPos = Config.value("WindowPosition", QPoint(-8, -8)).toPoint();
-    if (mainWndSize.height() + titleBarHeight >= deskAvailRect.height()
-        && mainWndPos.y() < 0) {
-        main_window.showMaximized();
-    }
-    else {*/
-        main_window.show();
-    //}
+
+    main_window.show();
 
     foreach (const QString &arg, qApp->arguments()) {
         if (arg.startsWith("-connect:")) {
