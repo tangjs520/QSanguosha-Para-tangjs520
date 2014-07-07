@@ -12,3 +12,13 @@ QSanguosha.pro
 *.suo
 *.opensdf
 /extensions/
+[Dd]ebug/
+[Rr]elease/
+/tools/
+Win32/
+GeneratedFiles/
+lib/jsoncpp.lib
+lib/breakpad.lib
+lib/lua.lib
+QSanguosha.vcxproj.user
+/builds/vs2013/
