@@ -1,5 +1,5 @@
-image/
-audio/
+/image/
+/audio/
 sanguosha.qm
 config.ini
 Qt*4.dll
@@ -11,4 +11,4 @@ QSanguosha.pro
 *.sdf
 *.suo
 *.opensdf
-extensions/
+/extensions/
