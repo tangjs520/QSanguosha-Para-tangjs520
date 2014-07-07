@@ -213,7 +213,7 @@ public:
         return target != NULL && target->isAlive() && target->getPhase() == Player::Play;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Slash") || use.card->isNDTrick()){
             foreach(ServerPlayer *p, use.to){
@@ -319,7 +319,7 @@ public:
         return Slash::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "slash" && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     }
 
@@ -365,7 +365,7 @@ public:
         return false;
     }
 
-    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
         if (card->isKindOf("Slash"))
             return qrand() % 2 + 1;
         return -1;
@@ -494,7 +494,7 @@ public:
         events << HpRecover;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         RecoverStruct recover_struct = data.value<RecoverStruct>();
         int recover = recover_struct.recover;
         for (int i = 1; i <= recover; ++i){
@@ -712,7 +712,7 @@ public:
         return 6;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         if (player->getPhase() == Player::RoundStart){
             QStringList Qingchenglist = player->tag["neo2013qingcheng"].toStringList();
             if (!Qingchenglist.isEmpty()){
@@ -950,7 +950,7 @@ public:
         return Slash::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return (pattern == "slash" && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
             || (pattern == "@@neo2013tongwu");
     }
@@ -1085,7 +1085,7 @@ public:
     Neo2013Muhui(): ProhibitSkill("neo2013muhui"){
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others /* = QList<const Player *> */) const{
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> & /* = QList<const Player *> */) const{
         return to->hasSkill(objectName()) && (!card->isKindOf("SkillCard") || card->isKindOf("GuhuoCard") || card->isKindOf("QiceCard") || card->isKindOf("GudanCard"));
     }
 };
@@ -1136,7 +1136,7 @@ public:
         return target != NULL && target->isAlive();
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         ServerPlayer *mateng = room->findPlayerBySkillName(objectName());
 
         if (triggerEvent == EventPhaseStart){
@@ -1180,11 +1180,11 @@ Neo2013ZhoufuCard::Neo2013ZhoufuCard() {
     handling_method = Card::MethodNone;
 }
 
-bool Neo2013ZhoufuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool Neo2013ZhoufuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     return targets.isEmpty() &&  to_select->getPile("incantationn").isEmpty();
 }
 
-void Neo2013ZhoufuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void Neo2013ZhoufuCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.first();
     target->tag["Neo2013ZhoufuSource" + QString::number(getEffectiveId())] = QVariant::fromValue(source);
     target->addToPile("incantationn", this);
@@ -1286,7 +1286,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (player->faceUp() && effect.slash->isBlack()){
             LogMessage l;
@@ -1307,7 +1307,7 @@ public:
     Neo2013Canhui(): ProhibitSkill("neo2013canhui"){
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const{
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const{
         return (to->hasSkill(objectName()) && !to->faceUp() && card->isRed() && card->getSkillName() != "nosguhuo");
     }
 };
@@ -1318,7 +1318,7 @@ public:
         events << CardsMoveOneTime;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (!player->faceUp()){
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if ((move.from == player || move.to == player) && (move.from_places.contains(Player::PlaceHand) || move.to_place == Player::PlaceHand)){
@@ -1339,7 +1339,7 @@ public:
         return target != NULL && target->isAlive();
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         if (player->getPhase() != Player::RoundStart)
             return false;
 
@@ -1387,7 +1387,7 @@ public:
     }
 
 public:
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)
             && move.to_place == Player::DiscardPile){
@@ -1437,7 +1437,7 @@ Neo2013JiejiCard::Neo2013JiejiCard(){
     handling_method = Card::MethodNone;
 }
 
-void Neo2013JiejiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void Neo2013JiejiCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const{
     source->addToPile("robbery", this, false);
 }
 
@@ -1760,7 +1760,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         Neo2013JinanCard *card = new Neo2013JinanCard;
-        card->addSubcard(card);
+        card->addSubcard(originalCard);
         return card;
     }
 };
@@ -1772,7 +1772,7 @@ public:
         view_as_skill = new Neo2013JinanVS;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         foreach (ServerPlayer *p, use.to){
             if (p == player)
@@ -1888,7 +1888,7 @@ public:
     Neo2013Ganglie(): MasochismSkill("neo2013ganglie"){
     }
 
-    virtual void onDamaged(ServerPlayer *player, const DamageStruct &damage) const{
+    virtual void onDamaged(ServerPlayer *player, const DamageStruct &) const{
         Room *room = player->getRoom();
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@neo2013ganglie", true, true);
         if (target != NULL){

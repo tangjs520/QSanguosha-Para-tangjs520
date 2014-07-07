@@ -30,7 +30,7 @@ GameRule::GameRule(QObject *)
            << ChoiceMade;
 }
 
-bool GameRule::triggerable(const ServerPlayer *target) const{
+bool GameRule::triggerable(const ServerPlayer *) const{
     return true;
 }
 

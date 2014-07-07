@@ -77,7 +77,7 @@ void QSanCommandProgressBar::setCountdown(CommandType command) {
     m_mutex.unlock();
 }
 
-void QSanCommandProgressBar::paintEvent(QPaintEvent *e) {
+void QSanCommandProgressBar::paintEvent(QPaintEvent *) {
     m_mutex.lock();
     int val = this->m_val;
     int max = this->m_max;

@@ -1078,7 +1078,7 @@ void PlayerCardContainer::revivePlayer() {
     refresh();
 }
 
-void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *) {
     _m_mouse_doubleclicked = false;
 }
 

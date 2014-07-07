@@ -51,7 +51,7 @@ public:
     ShouYue(): AttackRangeSkill("shouyue$"){
     }
 
-    virtual int getExtra(const Player *target, bool include_weapon) const{
+    virtual int getExtra(const Player *target, bool) const{
         QList<const Player *> players = target->getAliveSiblings();
         foreach(const Player *p, players){
             if (p->hasLordSkill(objectName()) && target->getKingdom() == "shu")
@@ -73,7 +73,7 @@ public:
         return TriggerSkill::triggerable(target) && target->getMark(limit_mark) > 0;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DyingStruct dying = data.value<DyingStruct>();
         if (dying.who != player)
             return false;

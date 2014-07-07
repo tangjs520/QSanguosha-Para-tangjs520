@@ -51,11 +51,11 @@ DrZhihengCard::DrZhihengCard() {
     mute = true;
 }
 
-bool DrZhihengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool DrZhihengCard::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const{
     return to_select == Self;
 }
 
-bool DrZhihengCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool DrZhihengCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
     return targets.length() <= 1;
 }
 

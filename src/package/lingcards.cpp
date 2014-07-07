@@ -14,11 +14,11 @@ QString AwaitExhausted::getSubtype() const{
     return "await_exhausted";
 }
 
-bool AwaitExhausted::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const {
+bool AwaitExhausted::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const {
     return to_select != Self;
 }
 
-bool AwaitExhausted::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool AwaitExhausted::targetsFeasible(const QList<const Player *> &, const Player *) const{
     return true;
 }
 
@@ -59,7 +59,7 @@ bool BefriendAttacking::targetFilter(const QList<const Player *> &targets, const
     return Self->distanceTo(to_select) == distance && to_select->getKingdom() != "god" && to_select->getKingdom() != Self->getKingdom();
 }
 
-bool BefriendAttacking::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+bool BefriendAttacking::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
     return targets.length() > 0;
 }
 
@@ -233,7 +233,7 @@ SixSwords::SixSwords(Card::Suit suit, int number): Weapon(suit, number, 2){
 SixSwordsCard::SixSwordsCard(): SkillCard(){
 }
 
-bool SixSwordsCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool SixSwordsCard::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const{
     return to_select != Self;
 }
 
@@ -289,7 +289,7 @@ public:
     SixSwordsSkillRange(): AttackRangeSkill("#SixSwords"){
     }
 
-    virtual int getExtra(const Player *target, bool include_weapon) const{
+    virtual int getExtra(const Player *target, bool) const{
         if (target->getMark("@SixSwordsBuff") > 0)
             return 1;
         return 0;
@@ -303,7 +303,7 @@ Triblade::Triblade(Card::Suit suit, int number): Weapon(suit, number, 3){
 TribladeCard::TribladeCard(): SkillCard(){
 }
 
-bool TribladeCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool TribladeCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     return targets.length() == 0 && to_select->hasFlag("TribladeFilter");
 }
 
@@ -332,7 +332,7 @@ public:
         view_as_skill = new TribladeSkillVS;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.to && damage.to->isAlive() && damage.card && damage.card->isKindOf("Slash")
             && damage.by_user && !damage.chain && !damage.transfer){
@@ -438,7 +438,7 @@ void PeaceSpell::onUninstall(ServerPlayer *player) const{
 PeaceSpellCard::PeaceSpellCard(){
 }
 
-bool PeaceSpellCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool PeaceSpellCard::targetFilter(const QList<const Player *> &, const Player *, const Player *) const{
     return true;
 }
 

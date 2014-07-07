@@ -191,7 +191,7 @@ void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) {
     _m_lastMousePressScenePos = mapToParent(mouseEvent->pos());
 }
 
-void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) {
+void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *) {
     if (frozen) return;
 
     //如果产生了双击事件，会在双击事件后，又会接着产生mouseReleaseEvent，
@@ -214,7 +214,7 @@ void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) {
     setPos(newPos - this->transform().map(down_pos));
 }
 
-void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
     _m_mouse_doubleclicked = true;
 
     if (frozen) return;

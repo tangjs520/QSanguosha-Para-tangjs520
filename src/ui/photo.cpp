@@ -245,7 +245,7 @@ void Photo::updatePhase() {
         setFrame(S_FRAME_NO_FRAME);
 }
 
-void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 }
 

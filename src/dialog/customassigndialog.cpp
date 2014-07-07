@@ -708,7 +708,7 @@ void CustomAssignDialog::updatePlayerHpInfo(const QString &name) {
     }
 }
 
-void CustomAssignDialog::updateAllRoles(bool toggled) {
+void CustomAssignDialog::updateAllRoles(bool) {
     for (int i = 0; i < list->count(); ++i) {
         QString name = player_mapping[i];
         QString role = role_mapping[name];
