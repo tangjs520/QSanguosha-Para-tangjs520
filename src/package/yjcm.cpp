@@ -272,6 +272,7 @@ public:
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.to == player && move.from && move.from->isAlive() && move.from != move.to
+                && move.to_pile_name != "wooden_ox"
                 && move.card_ids.size() >= 2
                 && move.reason.m_reason != CardMoveReason::S_REASON_PREVIEWGIVE) {
                 move.from->setFlags("EnyuanDrawTarget");
