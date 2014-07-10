@@ -5563,9 +5563,10 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, c
 }
 
 bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &skill_name,
-                      bool is_preview, bool visible, bool optional, int max_num,
-                      QList<ServerPlayer *> players, CardMoveReason reason, const QString &prompt,
-                      bool notify_skill) {
+    bool is_preview, bool visible, bool optional, int max_num,
+    QList<ServerPlayer *> players, CardMoveReason reason, const QString &prompt,
+    bool notify_skill)
+{
     if (max_num == -1)
         max_num = cards.length();
     if (players.isEmpty())
@@ -5628,9 +5629,15 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
     }
     Q_ASSERT(target != NULL);
 
+    DummyCard *dummy_card = new DummyCard;
+    foreach (int card_id, ids) {
+        cards.removeOne(card_id);
+        dummy_card->addSubcard(card_id);
+    }
+
     QVariant decisionData = QVariant::fromValue(QString("Yiji:%1:%2:%3:%4")
-                                                .arg(skill_name).arg(guojia->objectName()).arg(target->objectName())
-                                                .arg(IntList2StringList(ids).join("+")));
+        .arg(skill_name).arg(guojia->objectName()).arg(target->objectName())
+        .arg(IntList2StringList(ids).join("+")));
     thread->trigger(ChoiceMade, this, guojia, decisionData);
 
     if (notify_skill) {
@@ -5642,18 +5649,14 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
 
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill)
-            broadcastSkillInvoke(skill_name);
+            broadcastSkillInvoke(skill_name, skill->getEffectIndex(target, dummy_card));
         notifySkillInvoked(guojia, skill_name);
     }
 
     guojia->setFlags("Global_GongxinOperator");
-
-    foreach (int card_id, ids) {
-        cards.removeOne(card_id);
-        moveCardTo(Sanguosha->getCard(card_id), target, Player::PlaceHand, reason, visible);
-    }
-
+    moveCardTo(dummy_card, target, Player::PlaceHand, reason, visible);
     guojia->setFlags("-Global_GongxinOperator");
+    delete dummy_card;
 
     return true;
 }
