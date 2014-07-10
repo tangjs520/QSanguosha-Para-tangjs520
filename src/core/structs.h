@@ -423,6 +423,10 @@ struct CardResponseStruct {
     bool m_isRetrial;
 };
 
+struct GivedCardsStruct {
+    QMap<ServerPlayer *, QList<int> > m_givedCards;
+};
+
 enum TriggerEvent {
     NonTrigger,
 
@@ -494,6 +498,7 @@ enum TriggerEvent {
     CardResponded,
     BeforeCardsMove, // sometimes we need to record cards before the move
     CardsMoveOneTime,
+    AfterGiveCards,
 
     PreCardUsed, // for AI to filter events only.
     CardUsed,
@@ -531,6 +536,7 @@ Q_DECLARE_METATYPE(DeathStruct)
 Q_DECLARE_METATYPE(RecoverStruct)
 Q_DECLARE_METATYPE(PhaseChangeStruct)
 Q_DECLARE_METATYPE(CardResponseStruct)
+Q_DECLARE_METATYPE(GivedCardsStruct)
 Q_DECLARE_METATYPE(const Card *)
 Q_DECLARE_METATYPE(ServerPlayer *)
 Q_DECLARE_METATYPE(JudgeStruct *)

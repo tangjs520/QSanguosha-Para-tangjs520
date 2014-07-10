@@ -18,6 +18,9 @@ class RendeCard: public SkillCard {
 public:
     Q_INVOKABLE RendeCard();
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+
+private:
+    void triggerAfterGiveCardsEvent(Room *room, ServerPlayer *source) const;
 };
 
 class YijueCard: public SkillCard {

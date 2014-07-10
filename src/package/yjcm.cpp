@@ -265,14 +265,15 @@ public:
 class Enyuan: public TriggerSkill {
 public:
     Enyuan(): TriggerSkill("enyuan") {
-        events << CardsMoveOneTime << Damaged;
+        events << CardsMoveOneTime << AfterGiveCards << Damaged;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == CardsMoveOneTime) {
+        if (triggerEvent == CardsMoveOneTime || triggerEvent == AfterGiveCards) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.to == player && move.from && move.from->isAlive() && move.from != move.to
                 && move.to_pile_name != "wooden_ox"
+                && move.reason.m_skillName != "rende"
                 && move.card_ids.size() >= 2
                 && move.reason.m_reason != CardMoveReason::S_REASON_PREVIEWGIVE) {
                 move.from->setFlags("EnyuanDrawTarget");

@@ -322,25 +322,35 @@ public:
 class Qingjian: public TriggerSkill {
 public:
     Qingjian(): TriggerSkill("qingjian") {
-        events << CardsMoveOneTime;
+        events << CardsMoveOneTime << AfterGiveCards;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (!room->getTag("FirstRound").toBool() && player->getPhase() != Player::Draw
-            && move.to == player && move.to_place == Player::PlaceHand) {
+        if (triggerEvent == CardsMoveOneTime || triggerEvent == AfterGiveCards) {
+            if (!room->getTag("FirstRound").toBool()
+                && player->getPhase() != Player::Draw
+                && move.to == player && move.to_place == Player::PlaceHand
+                && move.reason.m_skillName != "rende") {
                 QList<int> ids;
                 foreach (int id, move.card_ids) {
-                    if (room->getCardOwner(id) == player && room->getCardPlace(id) == Player::PlaceHand)
+                    if (room->getCardOwner(id) == player
+                        && room->getCardPlace(id) == Player::PlaceHand) {
                         ids << id;
+                    }
                 }
-                if (ids.isEmpty())
+                if (ids.isEmpty()) {
                     return false;
+                }
+
                 player->tag["QingjianCurrentMoveSkill"] = QVariant(move.reason.m_skillName);
                 while (room->askForYiji(player, ids, objectName(), false, false, true, -1,
                     QList<ServerPlayer *>(), CardMoveReason(), "@qingjian-distribute", true)) {
-                        if (player->isDead()) return false;
+                    if (player->isDead()) {
+                        return false;
+                    }
                 }
+            }
         }
         return false;
     }

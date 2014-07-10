@@ -40,17 +40,46 @@ void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "rende", QString());
     room->obtainCard(target, this, reason, false);
 
+    GivedCardsStruct rendeGivedCards = room->getTag("RendeGivedCards").value<GivedCardsStruct>();
+    rendeGivedCards.m_givedCards[target].append(subcards);
+    room->setTag("RendeGivedCards", QVariant::fromValue(rendeGivedCards));
+
     int new_value = old_value + subcards.length();
     room->setPlayerMark(source, "rende", new_value);
 
     if (old_value < 2 && new_value >= 2)
         room->recover(source, RecoverStruct(source));
 
-    if (room->getMode() == "04_1v3" && source->getMark("rende") >= 2) return;
-    if (source->isKongcheng() || source->isDead() || rende_list.isEmpty()) return;
+    if ((room->getMode() == "04_1v3" && source->getMark("rende") >= 2)
+        || source->isKongcheng() || source->isDead() || rende_list.isEmpty()) {
+        triggerAfterGiveCardsEvent(room, source);
+        return;
+    }
+
     room->addPlayerHistory(source, "RendeCard", -1);
-    if (!room->askForUseCard(source, "@@rende", "@rende-give", -1, Card::MethodNone))
+    if (!room->askForUseCard(source, "@@rende", "@rende-give", -1, Card::MethodNone)) {
         room->addPlayerHistory(source, "RendeCard");
+        triggerAfterGiveCardsEvent(room, source);
+    }
+}
+
+void RendeCard::triggerAfterGiveCardsEvent(Room *room, ServerPlayer *source) const
+{
+    GivedCardsStruct rendeGivedCards = room->getTag("RendeGivedCards").value<GivedCardsStruct>();
+    foreach (ServerPlayer *rendeTarget, rendeGivedCards.m_givedCards.keys()) {
+        CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(),
+            rendeTarget->objectName(), "rende_end", QString());
+        CardsMoveOneTimeStruct move;
+        move.card_ids = rendeGivedCards.m_givedCards[rendeTarget];
+        move.from = source;
+        move.to = rendeTarget;
+        move.reason = reason;
+        move.to_place = Player::PlaceHand;
+        QVariant data = QVariant::fromValue(move);
+        room->getThread()->trigger(AfterGiveCards, room, rendeTarget, data);
+    }
+
+    room->removeTag("RendeGivedCards");
 }
 
 YijueCard::YijueCard() {
