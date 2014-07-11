@@ -2316,6 +2316,7 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 
     if (!is_robot) {
         notifyProperty(player, player, "objectName");
+        notifyProperty(player, player, "nickname", Settings::toBase64(screen_name));
 
         ServerPlayer *owner = getOwner();
         if (owner == NULL) {

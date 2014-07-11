@@ -136,6 +136,7 @@ public slots:
     virtual void refresh();
     void updateSaveMeIcon(bool visible);
     void updateOwnerIcon(bool owner);
+    void updateScreenName(const QString &screenName);
     void hideSkillName();
 
 protected:

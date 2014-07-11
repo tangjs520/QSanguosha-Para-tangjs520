@@ -20,6 +20,7 @@ class Player : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QString screenname READ screenName WRITE setScreenName)
+    Q_PROPERTY(QString nickname READ nickName WRITE setNickName)
     Q_PROPERTY(int hp READ getHp WRITE setHp)
     Q_PROPERTY(int maxhp READ getMaxHp WRITE setMaxHp)
     Q_PROPERTY(QString kingdom READ getKingdom WRITE setKingdom)
@@ -62,6 +63,9 @@ public:
 
     void setScreenName(const QString &screen_name) { this->screen_name = screen_name; }
     const QString &screenName() const { return screen_name; }
+
+    void setNickName(const QString &nickName);
+    const QString &nickName() const { return screen_name; }
 
     // property setters/getters
     int getHp() const { return hp; }
@@ -318,6 +322,7 @@ signals:
     void hp_changed();
     void kingdom_changed();
     void phase_changed();
+    void screenname_changed(const QString &newScreenName);
     void owner_changed(bool owner);
     void ready_changed(bool ready);
     void save_me_changed(bool save);

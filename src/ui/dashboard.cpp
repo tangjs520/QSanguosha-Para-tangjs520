@@ -1264,14 +1264,7 @@ void Dashboard::repaintAll()
     _paintRightFrame();
     _m_skillDock->update();
 
-    if (_m_screenNameItem != NULL) {
-        if (m_player != NULL) {
-            _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
-                _m_layout->m_screenNameArea,
-                Qt::AlignCenter,
-                m_player->screenName());
-        }
-    }
+    updateScreenName(m_player->screenName());
 
     PlayerCardContainer::repaintAll();
 }

@@ -197,10 +197,7 @@ void PlayerCardContainer::updateAvatar() {
     if (m_player) {
         general = m_player->getAvatarGeneral();
         if (Self != m_player) {
-            _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
-                _m_layout->m_screenNameArea,
-                Qt::AlignCenter,
-                m_player->screenName());
+            updateScreenName(m_player->screenName());
 
             if (!_m_screenNameItem->isVisible()) {
                 _m_screenNameItem->show();
@@ -576,6 +573,7 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player) {
         connect(player, SIGNAL(hp_changed()), this, SLOT(updateHp()));
         connect(player, SIGNAL(save_me_changed(bool)), this, SLOT(updateSaveMeIcon(bool)));
         connect(player, SIGNAL(owner_changed(bool)), this, SLOT(updateOwnerIcon(bool)));
+        connect(player, SIGNAL(screenname_changed(const QString &)), this, SLOT(updateScreenName(const QString &)));
 
         QTextDocument *textDoc = m_player->getMarkDoc();
         Q_ASSERT(_m_markItem);
@@ -1303,6 +1301,16 @@ void PlayerCardContainer::updateOwnerIcon(bool owner)
         QString key = owner ? QSanRoomSkin::S_SKIN_KEY_OWNER_ICON
             : QSanRoomSkin::S_SKIN_KEY_READY_ICON;
         _paintPixmap(_m_readyIcon, _m_layout->m_readyIconRegion, key, _getAvatarParent());
+    }
+}
+
+void PlayerCardContainer::updateScreenName(const QString &screenName)
+{
+    if (_m_screenNameItem != NULL) {
+        _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
+            _m_layout->m_screenNameArea,
+            Qt::AlignCenter,
+            screenName);
     }
 }
 
