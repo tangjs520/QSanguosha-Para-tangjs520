@@ -81,6 +81,7 @@ public:
     bool isConsoleStart() const { return m_consoleStart; }
     void forceRestart();
     const QString &getReplayPath() const { return m_replayPath; }
+    void deleteClient();
 
 protected:
     virtual void closeEvent(QCloseEvent *);
@@ -106,7 +107,6 @@ private:
     void restoreFromConfig();
 
     QGraphicsItem *const _isExistItem(const QString &title) const;
-    void deleteClient();
     void restart();
     void closeAllDialog();
     static void backgroundLoadResources();
