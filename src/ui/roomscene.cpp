@@ -401,7 +401,9 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             QString huashenGeneral = arg[2].asCString();
             QString huashenSkill = arg[3].asCString();
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            container->startHuaShen(huashenGeneral, huashenSkill);
+            if (container) {
+                container->startHuaShen(huashenGeneral, huashenSkill);
+            }
             break;
         }
     case S_GAME_EVENT_PLAY_EFFECT: {
@@ -451,9 +453,12 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
 
             // stop huashen animation
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            if (!player->hasSkill("huashen"))
-                container->stopHuaShen();
-            container->updateAvatarTooltip();
+            if (container) {
+                if (!player->hasSkill("huashen")) {
+                    container->stopHuaShen();
+                }
+                container->updateAvatarTooltip();
+            }
             break;
         }
     case S_GAME_EVENT_ACQUIRE_SKILL: {
@@ -465,7 +470,9 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             acquireSkill(player, skill_name);
 
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            container->updateAvatarTooltip();
+            if (container) {
+                container->updateAvatarTooltip();
+            }
             break;
         }
     case S_GAME_EVENT_ADD_SKILL: {
@@ -476,7 +483,9 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             player->addSkill(skill_name);
 
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            container->updateAvatarTooltip();
+            if (container) {
+                container->updateAvatarTooltip();
+            }
             break;
         }
     case S_GAME_EVENT_LOSE_SKILL: {
@@ -487,7 +496,9 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             player->loseSkill(skill_name);
 
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            container->updateAvatarTooltip();
+            if (container) {
+                container->updateAvatarTooltip();
+            }
             break;
         }
     case S_GAME_EVENT_PREPARE_SKILL:
@@ -535,7 +546,9 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
                     detachSkill(skill->objectName());
                 if (oldHero->hasSkill("huashen")) {
                     PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-                    container->stopHuaShen();
+                    if (container) {
+                        container->stopHuaShen();
+                    }
                 }
             }
 
@@ -544,7 +557,9 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
     case S_GAME_EVENT_PLAYER_REFORM: {
             ClientPlayer *player = ClientInstance->getPlayer(arg[1].asCString());
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            container->updateReformState();
+            if (container) {
+                container->updateReformState();
+            }
             break;
         }
     case S_GAME_EVENT_SKILL_INVOKED: {
@@ -557,7 +572,9 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             if (!player || !player->hasSkill(skill_name)) return;
 
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            container->showSkillName(skill_name);
+            if (container) {
+                container->showSkillName(skill_name);
+            }
 
             //播放技能特效动画
             QString skillEmotion = QString("skill/%1").arg(skill_name);
@@ -596,7 +613,9 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
         QSanProtocol::Utils::tryParse(arg[2], anJiangNames);
         player->tag["anjiang_generals"] = QVariant::fromValue(anJiangNames);
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateAvatarTooltip();
+        if (container) {
+            container->updateAvatarTooltip();
+        }
         break;
     }
 
@@ -1924,7 +1943,6 @@ bool RoomScene::_processCardsMove(CardsMoveStruct &move, bool isLost) {
 }
 
 void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves) {
-    int count = 0;
     for (int i = 0; i < card_moves.size(); ++i) {
         CardsMoveStruct &movement = card_moves[i];
         bool skipMove = _processCardsMove(movement, false);
@@ -1932,8 +1950,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves) {
         if (_shouldIgnoreDisplayMove(movement)) continue;
         card_container->m_currentPlayer = (ClientPlayer *)movement.to;
         GenericCardContainer *to_container = _getGenericCardContainer(movement.to_place, movement.to);
-        QList<CardItem *> cards = _m_cardsMoveStash[moveId][count];
-        ++count;
+        QList<CardItem *> cards = _m_cardsMoveStash[moveId][i];
         for (int j = 0; j < cards.size(); ++j) {
             CardItem *card = cards[j];
             card->setFlag(QGraphicsItem::ItemIsMovable, false);
@@ -1948,8 +1965,10 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves) {
             card->setFootnote(_translateMovement(movement));
             card->hideFootnote();
         }
-        bringToFront(to_container);
-        to_container->addCardItems(cards, movement);
+        if (to_container) {
+            bringToFront(to_container);
+            to_container->addCardItems(cards, movement);
+        }
         keepGetCardLog(movement);
     }
     _m_cardsMoveStash[moveId].clear();
@@ -1963,11 +1982,13 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves) {
         if (_shouldIgnoreDisplayMove(movement)) continue;
         card_container->m_currentPlayer = (ClientPlayer *)movement.to;
         GenericCardContainer *from_container = _getGenericCardContainer(movement.from_place, movement.from);
-        QList<CardItem *> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
-        foreach (CardItem *card, cards)
-            card->setEnabled(false);
-
-        _m_cardsMoveStash[moveId].append(cards);
+        if (from_container) {
+            QList<CardItem *> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
+            foreach (CardItem *card, cards) {
+                card->setEnabled(false);
+            }
+            _m_cardsMoveStash[moveId].append(cards);
+        }
         keepLoseCardLog(movement);
     }
 }
@@ -3398,7 +3419,9 @@ void RoomScene::killPlayer(const QString &who) {
     ClientPlayer *player = ClientInstance->getPlayer(who);
     if (player) {
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->stopHuaShen();
+        if (container) {
+            container->stopHuaShen();
+        }
     }
 
     if (Config.EnableEffects && Config.EnableLastWord && !Self->hasFlag("marshalling"))
@@ -3437,22 +3460,24 @@ void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id, bool move_car
 
     if (taker) {
         GenericCardContainer *container = _getGenericCardContainer(Player::PlaceHand, taker);
-        bringToFront(container);
-        if (move_cards) {
-            QString type = "$TakeAG";
-            QString from_general = taker->objectName();
-            QString card_str = QString::number(card_id);
-            log_box->appendLog(type, from_general, QStringList(), card_str);
-            CardsMoveStruct move;
-            move.card_ids.append(card_id);
-            move.from_place = Player::PlaceWuGu;
-            move.to_place = Player::PlaceHand;
-            move.to = taker;
+        if (container) {
+            bringToFront(container);
+            if (move_cards) {
+                QString type = "$TakeAG";
+                QString from_general = taker->objectName();
+                QString card_str = QString::number(card_id);
+                log_box->appendLog(type, from_general, QStringList(), card_str);
+                CardsMoveStruct move;
+                move.card_ids.append(card_id);
+                move.from_place = Player::PlaceWuGu;
+                move.to_place = Player::PlaceHand;
+                move.to = taker;
 
-            QList<CardItem *> items;
-            items << copy;
-            container->addCardItems(items, move);
-            return;
+                QList<CardItem *> items;
+                items << copy;
+                container->addCardItems(items, move);
+                return;
+            }
         }
     }
 
@@ -3466,16 +3491,18 @@ void RoomScene::showCard(const QString &player_name, int card_id) {
     card_ids << card_id;
     const ClientPlayer *player = ClientInstance->getPlayer(player_name);
 
-    GenericCardContainer *container = _getGenericCardContainer(Player::PlaceHand, (Player *)player);
-    QList<CardItem *> card_items = container->cloneCardItems(card_ids);
-    CardMoveReason reason(CardMoveReason::S_REASON_DEMONSTRATE, player->objectName());
-    bringToFront(m_tablePile);
-    CardsMoveStruct move;
-    move.from_place = Player::PlaceHand;
-    move.to_place = Player::PlaceTable;
-    move.reason = reason;
-    card_items[0]->setFootnote(_translateMovement(move));
-    m_tablePile->addCardItems(card_items, move);
+    GenericCardContainer *container = _getGenericCardContainer(Player::PlaceHand, player);
+    if (container) {
+        QList<CardItem *> card_items = container->cloneCardItems(card_ids);
+        CardMoveReason reason(CardMoveReason::S_REASON_DEMONSTRATE, player->objectName());
+        bringToFront(m_tablePile);
+        CardsMoveStruct move;
+        move.from_place = Player::PlaceHand;
+        move.to_place = Player::PlaceTable;
+        move.reason = reason;
+        card_items[0]->setFootnote(_translateMovement(move));
+        m_tablePile->addCardItems(card_items, move);
+    }
 
     QString card_str = QString::number(card_id);
     log_box->appendLog("$ShowCard", player->objectName(), QStringList(), card_str);
@@ -4020,7 +4047,9 @@ void RoomScene::doHuashen(const QString &, const QStringList &args) {
     move.to_pile_name = "huashen";
 
     GenericCardContainer *container = _getGenericCardContainer(Player::PlaceHand, player);
-    container->addCardItems(generals, move);
+    if (container) {
+        container->addCardItems(generals, move);
+    }
 
     if (owner)
         Self->tag["Huashens"] = huashen_list;
@@ -4708,7 +4737,7 @@ void RoomScene::getActualGeneralNameAndSkinIndex(ClientPlayer *player, const QSt
     generalName1 = player->getGeneralName();
     if (generalName1 == "zuoci" && skillName != "huashen" && skillName != "xinsheng") {
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        if (NULL != container) {
+        if (container) {
             generalName1 = container->getHuaShenGeneralName();
         }
     }
@@ -4717,7 +4746,7 @@ void RoomScene::getActualGeneralNameAndSkinIndex(ClientPlayer *player, const QSt
     generalName2 = player->getGeneral2Name();
     if (generalName2 == "zuoci" && skillName != "huashen" && skillName != "xinsheng") {
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        if (NULL != container) {
+        if (container) {
             generalName2 = container->getHuaShenGeneralName();
         }
     }
