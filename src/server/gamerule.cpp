@@ -111,7 +111,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
     // Handle global events
     if (player == NULL) {
         if (triggerEvent == GameStart) {
-			room->doLightbox("$gamestart", 3500);
+            room->doLightbox("$gamestart", 3500);
             if (room->getMode() == "04_boss") {
                 int difficulty = Config.value("BossModeDifficulty", 0).toInt();
                 if ((difficulty & (1 << GameRule::BMDIncMaxHp)) > 0) {

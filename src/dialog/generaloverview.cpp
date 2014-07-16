@@ -509,8 +509,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
         win_button->setObjectName("audio/system/win-cc.ogg");
         connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
     }
-
-	if (general_name.contains("liubei")) {
+    else if (general_name.contains("liubei")) {
         QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
                                                                 tr("liubeiwin!"));
 
@@ -520,8 +519,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
         win_button->setObjectName("audio/system/win-liubei.ogg");
         connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
     }
-
-	if (general_name.contains("sunquan")) {
+    else if (general_name.contains("sunquan")) {
         QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
                                                                 tr("sunquanwin!"));
 
@@ -531,8 +529,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
         win_button->setObjectName("audio/system/win-sunquan.ogg");
         connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
     }
-
-	if (general_name.contains("zhangjiao")) {
+    else if (general_name.contains("zhangjiao")) {
         QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
                                                                 tr("zhangjiaowin!"));
 
@@ -542,8 +539,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
         win_button->setObjectName("audio/system/win-zhangjiao.ogg");
         connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
     }
-
-	if (general_name.contains("yuanshao")) {
+    else if (general_name.contains("yuanshao")) {
         QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
                                                                 tr("yuanshaowin!"));
 
@@ -553,8 +549,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
         win_button->setObjectName("audio/system/win-yuanshao.ogg");
         connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
     }
-
-	if (general_name.contains("caopi")) {
+    else if (general_name.contains("caopi")) {
         QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
                                                                 tr("caopiwin!"));
 
@@ -564,8 +559,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
         win_button->setObjectName("audio/system/win-caopi.ogg");
         connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
     }
-
-	if (general_name.contains("dongzhuo")) {
+    else if (general_name.contains("dongzhuo")) {
         QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
                                                                 tr("dongzhuowin!"));
 
@@ -575,8 +569,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
         win_button->setObjectName("audio/system/win-dongzhuo.ogg");
         connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
     }
-
-	if (general_name.contains("liushan")) {
+    else if (general_name.contains("liushan")) {
         QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
                                                                 tr("liushanwin!"));
 
@@ -586,8 +579,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
         win_button->setObjectName("audio/system/win-liushan.ogg");
         connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
     }
-
-	if (general_name.contains("sunce")) {
+    else if (general_name.contains("sunce")) {
         QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
                                                                 tr("suncewin!"));
 
@@ -597,8 +589,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
         win_button->setObjectName("audio/system/win-sunce.ogg");
         connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
     }
-
-    if (general_name == "shenlvbu1" || general_name == "shenlvbu2") {
+    else if (general_name == "shenlvbu1" || general_name == "shenlvbu2") {
         QCommandLinkButton *stage_change_button = new QCommandLinkButton(tr("Stage Change"),
                                                                          tr("Trashes, the real fun is just beginning!"));
 

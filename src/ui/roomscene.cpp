@@ -2978,41 +2978,40 @@ void RoomScene::onGameOver() {
     if (victory) {
         win_effect = "win";
         foreach (const Player *player, ClientInstance->getPlayers()) {
-	if (player->property("win").toBool()) {
-		Audio::stopAll();
-		
-		if (player->getGeneralName().contains("caocao")) {
-			win_effect = "win-cc";
-		}
-		else if (player->getGeneralName().contains("liubei")) {
-			win_effect = "win-liubei";
-		}
-		else if (player->getGeneralName().contains("sunquan")) {
-			win_effect = "win-sunquan";
-		}
-		else if (player->getGeneralName().contains("zhangjiao")) {
-			win_effect = "win-zhangjiao";
-		}
-		else if (player->getGeneralName().contains("yuanshao")) {
-			win_effect = "win-yuanshao";
-		}
-		else if (player->getGeneralName().contains("caopi")) {
-			win_effect = "win-caopi";
-		}
-		else if (player->getGeneralName().contains("dongzhuo")) {
-			win_effect = "win-dongzhuouo";
-		}
-		else if (player->getGeneralName().contains("liushan")) {
-			win_effect = "win-liushan";
-		}
-		else if (player->getGeneralName().contains("sunce")) {
-			win_effect = "win-sunce";
-		}
-		
-		break;
-	   }
-     }
+            if (player->property("win").toBool()) {
+                Audio::stopAll();
 
+                if (player->getGeneralName().contains("caocao")) {
+                    win_effect = "win-cc";
+                }
+                else if (player->getGeneralName().contains("liubei")) {
+                    win_effect = "win-liubei";
+                }
+                else if (player->getGeneralName().contains("sunquan")) {
+                    win_effect = "win-sunquan";
+                }
+                else if (player->getGeneralName().contains("zhangjiao")) {
+                    win_effect = "win-zhangjiao";
+                }
+                else if (player->getGeneralName().contains("yuanshao")) {
+                    win_effect = "win-yuanshao";
+                }
+                else if (player->getGeneralName().contains("caopi")) {
+                    win_effect = "win-caopi";
+                }
+                else if (player->getGeneralName().contains("dongzhuo")) {
+                    win_effect = "win-dongzhuouo";
+                }
+                else if (player->getGeneralName().contains("liushan")) {
+                    win_effect = "win-liushan";
+                }
+                else if (player->getGeneralName().contains("sunce")) {
+                    win_effect = "win-sunce";
+                }
+
+                break;
+            }
+        }
     } else
         win_effect = "lose";
 
