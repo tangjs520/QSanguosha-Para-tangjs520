@@ -13,7 +13,7 @@
 using namespace QSanProtocol;
 using namespace QSanProtocol::Utils;
 
-const int ServerPlayer::S_NUM_SEMAPHORES = 6;
+const int ServerPlayer::S_NUM_SEMAPHORES = NUMBER_OF_SEMAS;
 
 ServerPlayer::ServerPlayer(Room *room)
     : Player(room), m_isClientResponseReady(false), m_isWaitingReply(false),
