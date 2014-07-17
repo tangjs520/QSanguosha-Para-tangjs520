@@ -3383,20 +3383,23 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket) {
     }
 }
 
-void Room::marshal(ServerPlayer *player) {
+void Room::marshal(ServerPlayer *player)
+{
     notifyProperty(player, player, "objectName");
     notifyProperty(player, player, "role");
     notifyProperty(player, player, "flags", "marshalling");
     notifyProperty(player, player, "ready");
 
     foreach (ServerPlayer *p, m_players) {
-        if (p != player)
+        if (p != player) {
             p->introduceTo(player);
+        }
     }
 
     QStringList player_circle;
-    foreach (ServerPlayer *player, m_players)
+    foreach (ServerPlayer *player, m_players) {
         player_circle << player->objectName();
+    }
     doNotify(player, S_COMMAND_ARRANGE_SEATS, toJsonArray(player_circle));
 
     if (startInXsCommandNotified) {
@@ -3406,12 +3409,17 @@ void Room::marshal(ServerPlayer *player) {
     foreach (ServerPlayer *p, m_players) {
         notifyProperty(player, p, "general");
 
-        if (p->getGeneral2())
+        if (p->getGeneral2()) {
             notifyProperty(player, p, "general2");
+        }
     }
 
     if (Config.EnableBasara) {
         setAnjiangNames(player, player->getBasaraGeneralNames());
+    }
+
+    foreach (ServerPlayer *p, m_players) {
+        p->marshal(player);
     }
 
     if (gameStartCommandNotified) {
@@ -3420,11 +3428,6 @@ void Room::marshal(ServerPlayer *player) {
         QList<int> drawPile = Sanguosha->getRandomCards();
         doNotify(player, S_COMMAND_AVAILABLE_CARDS, toJsonArray(drawPile));
 
-        foreach (ServerPlayer *p, m_players) {
-            p->marshal(player);
-        }
-
-        notifyProperty(player, player, "flags", "-marshalling");
         doNotify(player, S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
 
         if (!m_fillAGArg.empty()) {
@@ -3437,6 +3440,8 @@ void Room::marshal(ServerPlayer *player) {
         Json::Value discard = toJsonArray(*m_discardPile);
         doNotify(player, S_COMMAND_SYNCHRONIZE_DISCARD_PILE, discard);
     }
+
+    notifyProperty(player, player, "flags", "-marshalling");
 }
 
 void Room::startGame() {

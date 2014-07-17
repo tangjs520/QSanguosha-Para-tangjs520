@@ -1076,8 +1076,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
     }
 
     //如果本玩家的当前状态是离线、托管或是电脑，则需要通知刚刚通过断线重连进入的玩家
-    const QString &currentState = getState();
-    if (currentState != "online") {
+    if (!isOnline()) {
         room->notifyProperty(player, this, "state");
     }
 }
