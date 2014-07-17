@@ -58,7 +58,8 @@ RolesBoxItem::RolesBoxItem()
 }
 
 RoomScene::RoomScene(QMainWindow *main_window)
-    : main_window(main_window), game_started(false)
+    : main_window(main_window), game_started(false),
+    pindian_success(false), _m_currentStage(0)
 {
     setParent(main_window);
 
