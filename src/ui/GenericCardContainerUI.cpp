@@ -722,13 +722,14 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds) {
     QList<CardItem *> result;
     foreach (int card_id, cardIds) {
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card_id));
-        int index = (int)(equip_card->location());
-        Q_ASSERT(_m_equipCards[index] != NULL);
+        int index = static_cast<int>(equip_card->location());
         CardItem *equip = _m_equipCards[index];
-        equip->setHomeOpacity(0.0);
-        equip->setPos(_m_layout->m_equipAreas[index].center());
-        result.append(equip);
-        _m_equipCards[index] = NULL;
+        if (equip) {
+            equip->setHomeOpacity(0.0);
+            equip->setPos(_m_layout->m_equipAreas[index].center());
+            result.append(equip);
+            _m_equipCards[index] = NULL;
+        }
         _mutexEquipAnim.lock();
         _m_equipAnim[index]->stop();
         _m_equipAnim[index]->clear();
