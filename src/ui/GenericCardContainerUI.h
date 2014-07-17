@@ -60,7 +60,7 @@ class PlayerCardContainer: public GenericCardContainer {
 public:
     PlayerCardContainer();
 
-    virtual void showProgressBar(QSanProtocol::Countdown countdown);
+    virtual void showProgressBar(const QSanProtocol::Countdown &countdown);
     void hideProgressBar();
     bool isProgressBarVisible() const {
         if (_m_progressBar != NULL) {

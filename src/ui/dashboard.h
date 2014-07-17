@@ -35,7 +35,7 @@ public:
     int getMiddleWidth();
 
     void hideControlButtons();
-    virtual void showProgressBar(QSanProtocol::Countdown countdown);
+    virtual void showProgressBar(const QSanProtocol::Countdown &countdown);
 
     QRectF getProgressBarSceneBoundingRect() const {
         return _m_progressBarItem->sceneBoundingRect();

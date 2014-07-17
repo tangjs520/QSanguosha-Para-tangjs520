@@ -176,7 +176,7 @@ void PlayerCardContainer::hideProgressBar() {
     _m_progressBar->hide();
 }
 
-void PlayerCardContainer::showProgressBar(Countdown countdown) {
+void PlayerCardContainer::showProgressBar(const Countdown &countdown) {
     _m_progressBar->setCountdown(countdown);
     _m_progressBar->show();
 }

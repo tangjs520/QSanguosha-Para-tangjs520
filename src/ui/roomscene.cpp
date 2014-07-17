@@ -155,7 +155,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString, int)), this, SLOT(showCard(QString, int)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool, QList<int>)), this, SLOT(doGongxin(QList<int>, bool, QList<int>)));
-    connect(ClientInstance, SIGNAL(focus_moved(QStringList, QSanProtocol::Countdown)), this, SLOT(moveFocus(QStringList, QSanProtocol::Countdown)));
+    connect(ClientInstance, SIGNAL(focus_moved(QStringList, const QSanProtocol::Countdown &)),
+        this, SLOT(moveFocus(QStringList, const QSanProtocol::Countdown &)));
     connect(ClientInstance, SIGNAL(emotion_set(QString, QString)), this, SLOT(setEmotion(QString, QString)));
     connect(ClientInstance, SIGNAL(skill_invoked(QString, QString)), this, SLOT(showSkillInvocation(QString, QString)));
     connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer *, QString)), this, SLOT(acquireSkill(const ClientPlayer *, QString)));
@@ -3822,7 +3823,7 @@ void RoomScene::_cancelAllFocus() {
     }
 }
 
-void RoomScene::moveFocus(const QStringList &players, Countdown countdown) {
+void RoomScene::moveFocus(const QStringList &players, const Countdown &countdown) {
     _cancelAllFocus();
     foreach (const QString &player, players) {
         Photo *photo = name2photo[player];

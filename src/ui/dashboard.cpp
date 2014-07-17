@@ -78,10 +78,9 @@ void Dashboard::hideControlButtons() {
     m_btnSortHandcard->hide();
 }
 
-void Dashboard::showProgressBar(QSanProtocol::Countdown countdown) {
-    _m_progressBar->setCountdown(countdown);
+void Dashboard::showProgressBar(const Countdown &countdown) {
     connect(_m_progressBar, SIGNAL(timedOut()), this, SIGNAL(progressBarTimedOut()));
-    _m_progressBar->show();
+    PlayerCardContainer::showProgressBar(countdown);
 }
 
 QGraphicsItem *Dashboard::getMouseClickReceiver() {

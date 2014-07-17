@@ -885,7 +885,7 @@ bool Room::notifyMoveFocus(ServerPlayer *player, CommandType command) {
     return notifyMoveFocus(players, S_COMMAND_MOVE_FOCUS, countdown);
 }
 
-bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, CommandType command, Countdown countdown) {
+bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, CommandType command, const Countdown &countdown) {
     Json::Value arg(Json::arrayValue);
     int n = players.size();
     for (int i = 0; i < n; ++i)

@@ -114,7 +114,7 @@ void QSanCommandProgressBar::paintEvent(QPaintEvent *) {
     painter.drawPixmap(0, 0, width, height, m_prog);
 }
 
-void QSanCommandProgressBar::setCountdown(Countdown countdown) {
+void QSanCommandProgressBar::setCountdown(const Countdown &countdown) {
     m_mutex.lock();
     m_hasTimer = (countdown.m_type != Countdown::S_COUNTDOWN_NO_LIMIT);
     m_max = countdown.m_max;
