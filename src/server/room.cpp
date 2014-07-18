@@ -502,6 +502,22 @@ void Room::gameOver(const QString &winner) {
         removeTag("NextGameSecondGeneral");
     }
 
+    QSet<QString> winners = winner.split("+").toSet();
+    QList<ServerPlayer *> winPlayers;
+    QList<ServerPlayer *> losePlayers;
+    foreach (ServerPlayer *player, m_players) {
+        QString role = player->getRole();
+        if (winners.contains(player->objectName()) || winners.contains(role)) {
+            winPlayers << player;
+        }
+        else {
+            losePlayers << player;
+        }
+    }
+    if (!winPlayers.isEmpty() && !losePlayers.isEmpty()) {
+        doLightbox(winPlayers, "$game-win", losePlayers, "$game-lose", 3500);
+    }
+
     Json::Value arg(Json::arrayValue);
     arg[0] = toJsonString(winner);
     arg[1] = toJsonArray(all_roles);
@@ -4191,6 +4207,20 @@ void Room::broadcastSkillInvoke(const QString &skill_name, bool isMale, int type
 void Room::doLightbox(const QString &lightboxName, int duration, int pixelSize) {
     if (Config.AIDelay == 0) return;
     doAnimate(S_ANIMATE_LIGHTBOX, lightboxName, QString("%1:%2").arg(duration).arg(pixelSize));
+    thread->delay(duration / 1.2);
+}
+
+void Room::doLightbox(const QList<ServerPlayer *> &winPlayers, const QString &winLightboxName,
+    const QList<ServerPlayer *> &losePlayers, const QString &loseLightboxName,
+    int duration/* = 2000*/, int pixelSize/* = 0*/)
+{
+    if (Config.AIDelay == 0) {
+        return;
+    }
+
+    doAnimate(S_ANIMATE_LIGHTBOX, winLightboxName, QString("%1:%2").arg(duration).arg(pixelSize), winPlayers);
+    doAnimate(S_ANIMATE_LIGHTBOX, loseLightboxName, QString("%1:%2").arg(duration).arg(pixelSize), losePlayers);
+
     thread->delay(duration / 1.2);
 }
 
