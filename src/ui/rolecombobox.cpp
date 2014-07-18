@@ -45,7 +45,7 @@ RoleComboBox::RoleComboBox(QGraphicsItem *parent)
           << new RoleComboBoxItem("rebel", index)
           << new RoleComboBoxItem("renegade", index);
 
-    if (ServerInfo.EnableHegemony) {
+    if (ServerInfo.EnableHegemony && isNormalGameMode(ServerInfo.GameMode)) {
         items << new RoleComboBoxItem("careerist", index);
     }
 
