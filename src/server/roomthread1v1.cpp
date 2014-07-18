@@ -114,6 +114,7 @@ void RoomThread1v1::run() {
 
 void RoomThread1v1::askForTakeGeneral(ServerPlayer *player) {
     while (room->isPaused()) {}
+    room->notifyMoveFocus(player, S_COMMAND_ASK_GENERAL);
 
     QString name;
     if (general_names.length() == 1)

@@ -3743,6 +3743,8 @@ void KOFOrderBox::killPlayer(const QString &general_name) {
 }
 
 void RoomScene::onGameStart() {
+    _cancelAllFocus();
+
     if (ServerInfo.EnableHegemony) {
         foreach (Photo *photo, photos) {
             photo->updateAvatarTooltip();

@@ -54,12 +54,13 @@ void TimedProgressBar::timerEvent(QTimerEvent *) {
             killTimer(m_timer);
             m_timer = 0;
         }
-        emitTimeout = true; 
+        emitTimeout = true;
     }
     val = m_val;
     m_mutex.unlock();
     this->setValue(val);
     if (doHide) hide();
+    update();
     if (emitTimeout) emit timedOut();
 }
 

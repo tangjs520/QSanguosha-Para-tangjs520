@@ -872,13 +872,17 @@ bool Room::notifyMoveFocus(ServerPlayer *player) {
     QList<ServerPlayer *> players;
     players.append(player);
     Countdown countdown;
-    countdown.m_type = Countdown::S_COUNTDOWN_NO_LIMIT;
     return notifyMoveFocus(players, S_COMMAND_MOVE_FOCUS, countdown);
 }
 
 bool Room::notifyMoveFocus(ServerPlayer *player, CommandType command) {
     QList<ServerPlayer *> players;
     players.append(player);
+    return notifyMoveFocus(players, command);
+}
+
+bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, CommandType command)
+{
     Countdown countdown;
     countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
     countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
@@ -2134,6 +2138,8 @@ bool Room::makeSurrender(ServerPlayer *initiator) {
             playersAlive << player;
         }
     }
+
+    notifyMoveFocus(playersAlive, S_COMMAND_SURRENDER);
     doBroadcastRequest(playersAlive, S_COMMAND_SURRENDER);
 
     // collect polls
@@ -2478,7 +2484,9 @@ void Room::chooseGenerals(const QList<ServerPlayer *> &playerList) {
     foreach (ServerPlayer *player, to_assign)
         _setupChooseGeneralRequestArgs(player);
 
+    notifyMoveFocus(to_assign, S_COMMAND_CHOOSE_GENERAL);
     doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+
     foreach (ServerPlayer *player, to_assign) {
         if (player->getGeneral() != NULL) continue;
         Json::Value generalName = player->getClientReply();
@@ -2495,7 +2503,12 @@ void Room::chooseGenerals(const QList<ServerPlayer *> &playerList) {
         if (!Config.EnableHegemony) {
             ServerPlayer *the_lord = getLord();
             _setupChooseGeneralRequestArgs(the_lord);
-            doBroadcastRequest(QList<ServerPlayer *>() << the_lord, S_COMMAND_CHOOSE_GENERAL);
+
+            QList<ServerPlayer *> lordPlayer;
+            lordPlayer << the_lord;
+            notifyMoveFocus(lordPlayer, S_COMMAND_CHOOSE_GENERAL);
+            doBroadcastRequest(lordPlayer, S_COMMAND_CHOOSE_GENERAL);
+
             if (NULL == the_lord->getGeneral2()) {
                 Json::Value generalName = the_lord->getClientReply();
                 if (!the_lord->m_isClientResponseReady || !generalName.isString()
@@ -2513,7 +2526,9 @@ void Room::chooseGenerals(const QList<ServerPlayer *> &playerList) {
         foreach (ServerPlayer *player, to_assign)
             _setupChooseGeneralRequestArgs(player);
 
+        notifyMoveFocus(to_assign, S_COMMAND_CHOOSE_GENERAL);
         doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+
         foreach (ServerPlayer *player, to_assign) {
             if (player->getGeneral2() != NULL) continue;
             Json::Value generalName = player->getClientReply();
@@ -4487,13 +4502,8 @@ void Room::askForLuckCard() {
     if (players.isEmpty())
         return;
 
-    Countdown countdown;
-    countdown.m_max = ServerInfo.getCommandTimeout(S_COMMAND_LUCK_CARD, S_CLIENT_INSTANCE);
-    countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
-
     for (int n = 0; n < Config.LuckCardLimitation; ++n) {
-        notifyMoveFocus(players, S_COMMAND_LUCK_CARD, countdown);
-
+        notifyMoveFocus(players, S_COMMAND_LUCK_CARD);
         doBroadcastRequest(players, S_COMMAND_LUCK_CARD);
 
         QList<ServerPlayer *> used;
@@ -5050,10 +5060,7 @@ QList<const Card *> Room::askForPindianRace(ServerPlayer *from, ServerPlayer *to
 
     Q_ASSERT(!from->isKongcheng() && !to->isKongcheng());
     while (isPaused()) {}
-    Countdown countdown;
-    countdown.m_max = ServerInfo.getCommandTimeout(S_COMMAND_PINDIAN, S_CLIENT_INSTANCE);
-    countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
-    notifyMoveFocus(QList<ServerPlayer *>() << from << to, S_COMMAND_PINDIAN, countdown);
+    notifyMoveFocus(QList<ServerPlayer *>() << from << to, S_COMMAND_PINDIAN);
 
     const Card *from_card = NULL, *to_card = NULL;
 

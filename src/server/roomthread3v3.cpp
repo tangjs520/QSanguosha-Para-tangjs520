@@ -13,7 +13,7 @@ using namespace QSanProtocol;
 using namespace QSanProtocol::Utils;
 
 RoomThread3v3::RoomThread3v3(Room *room)
-    :room(room)
+    : room(room), warm_leader(NULL), cool_leader(NULL)
 {
     room->getRoomState()->reset();
 }
@@ -74,7 +74,7 @@ void RoomThread3v3::run() {
         case Player::Lord: warm_leader = player; break;
         case Player::Renegade: cool_leader = player; break;
         default:
-                break;
+            break;
         }
     }
 
@@ -116,6 +116,7 @@ void RoomThread3v3::run() {
 
 void RoomThread3v3::askForTakeGeneral(ServerPlayer *player) {
     while (room->isPaused()) {}
+    room->notifyMoveFocus(player, S_COMMAND_ASK_GENERAL);
 
     QString name;
     if (general_names.length() == 1 || player->getState() != "online")
