@@ -360,7 +360,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     pausing_item->setOpacity(0.36);
     pausing_item->setZValue(1002.0);
 
-    QFont font= Config.BigFont;
+    QFont font = Config.BigFont;
     font.setPixelSize(100);
     pausing_text->setFont(font);
     pausing_text->setBrush(Qt::white);
@@ -1952,7 +1952,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves) {
         if (_shouldIgnoreDisplayMove(movement)) continue;
         card_container->m_currentPlayer = (ClientPlayer *)movement.to;
         GenericCardContainer *to_container = _getGenericCardContainer(movement.to_place, movement.to);
-        QList<CardItem *> cards = _m_cardsMoveStash[moveId][i];
+        QList<CardItem *> cards = _m_cardsMoveStash[moveId].value(i);
         for (int j = 0; j < cards.size(); ++j) {
             CardItem *card = cards[j];
             card->setFlag(QGraphicsItem::ItemIsMovable, false);
