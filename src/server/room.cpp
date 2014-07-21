@@ -2352,7 +2352,7 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 
     if (!is_robot) {
         QString greetingStr = tr("<font color=#EEB422>Player <b>%1</b> joined the game</font>").arg(screen_name);
-        speakCommand(player, Settings::toBase64(greetingStr));
+        speakCommand(NULL, Settings::toBase64(greetingStr));
 
         player->startNetworkDelayTest();
 
@@ -2977,7 +2977,12 @@ bool Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
     }
     if (broadcast) {
         Json::Value body(Json::arrayValue);
-        body[0] = toJsonString(player->objectName());
+        if (player) {
+            body[0] = toJsonString(player->objectName());
+        }
+        else {
+            body[0] = ".";
+        }
         body[1] = arg;
         doBroadcastNotify(S_COMMAND_SPEAK, body);
     }
@@ -5746,7 +5751,7 @@ bool Room::networkDelayTestCommand(ServerPlayer *player, const Json::Value &) {
     QString reportStr = tr("<font color=#EEB422>The network delay of player <b>%1</b> is %2 milliseconds.</font>")
         .arg(player->screenName()).arg(QString::number(delay));
 
-    speakCommand(player, Settings::toBase64(reportStr));
+    speakCommand(NULL, Settings::toBase64(reportStr));
 
     return true;
 }
@@ -5911,7 +5916,7 @@ void Room::disconnectPlayer(ServerPlayer *player)
             QString screen_name = player->screenName();
             QString leaveStr = tr("<font color=#000000>Player <b>%1</b> left the game</font>").arg(screen_name);
 
-            speakCommand(player, Settings::toBase64(leaveStr));
+            speakCommand(NULL, Settings::toBase64(leaveStr));
         }
 
         doBroadcastNotify(S_COMMAND_REMOVE_PLAYER, toJsonString(player->objectName()));
