@@ -176,7 +176,7 @@ void PlayerCardContainer::hideProgressBar() {
     _m_progressBar->hide();
 }
 
-void PlayerCardContainer::showProgressBar(Countdown countdown) {
+void PlayerCardContainer::showProgressBar(const Countdown &countdown) {
     _m_progressBar->setCountdown(countdown);
     _m_progressBar->show();
 }
@@ -722,13 +722,14 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds) {
     QList<CardItem *> result;
     foreach (int card_id, cardIds) {
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card_id));
-        int index = (int)(equip_card->location());
-        Q_ASSERT(_m_equipCards[index] != NULL);
+        int index = static_cast<int>(equip_card->location());
         CardItem *equip = _m_equipCards[index];
-        equip->setHomeOpacity(0.0);
-        equip->setPos(_m_layout->m_equipAreas[index].center());
-        result.append(equip);
-        _m_equipCards[index] = NULL;
+        if (equip) {
+            equip->setHomeOpacity(0.0);
+            equip->setPos(_m_layout->m_equipAreas[index].center());
+            result.append(equip);
+            _m_equipCards[index] = NULL;
+        }
         _mutexEquipAnim.lock();
         _m_equipAnim[index]->stop();
         _m_equipAnim[index]->clear();
@@ -959,7 +960,7 @@ void PlayerCardContainer::_createControls() {
     _m_selectedFrame->setTransformationMode(Qt::SmoothTransformation);
 
     _m_floatingArea = new QGraphicsPixmapItem(_m_groupMain);
-    
+
     _m_screenNameItem = new QGraphicsPixmapItem(_getAvatarParent());
     _m_screenNameItem->hide();
 
@@ -974,7 +975,7 @@ void PlayerCardContainer::_createControls() {
     _m_smallAvatarArea->setFlag(QGraphicsItem::ItemStacksBehindParent);
 
     _m_smallAvatarNameItem = new QGraphicsPixmapItem(_getAvatarParent());
-    
+
     _m_extraSkillText = new QGraphicsPixmapItem(_getAvatarParent());
     _m_extraSkillText->hide();
 
@@ -1144,7 +1145,7 @@ QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVaria
     } else if (change == ItemEnabledHasChanged) {
         _m_votesGot = 0;
         emit enable_changed();
-    } 
+    }
 
     return QGraphicsObject::itemChange(change, value);
 }
@@ -1278,19 +1279,21 @@ void PlayerCardContainer::attemptChangeTargetUseCard()
         PlayerCardContainer *lastSelectedPlayerContainer
             = (PlayerCardContainer *)RoomSceneInstance->_getGenericCardContainer(Player::PlaceHand,
             lastSelectedPlayer);
-        //首先取消最后一个之前已被选中目标的选择
-        RoomSceneInstance->m_notShowTargetsEnablityAnimation = true;
-        lastSelectedPlayerContainer->_onMouseClicked(Qt::LeftButton);
-        //然后尝试选择本目标
-        RoomSceneInstance->m_notShowTargetsEnablityAnimation = false;
-        this->_onMouseClicked(Qt::LeftButton);
-        //如果本目标可被选择，则尝试成功，使用卡牌
-        if (this->isSelected()) {
-            emit card_to_use();
-        }
-        //如果不可被选择，则尝试失败，还原到尝试之前的状态
-        else {
+        if (lastSelectedPlayerContainer) {
+            //首先取消最后一个之前已被选中目标的选择
+            RoomSceneInstance->m_notShowTargetsEnablityAnimation = true;
             lastSelectedPlayerContainer->_onMouseClicked(Qt::LeftButton);
+            //然后尝试选择本目标
+            RoomSceneInstance->m_notShowTargetsEnablityAnimation = false;
+            this->_onMouseClicked(Qt::LeftButton);
+            //如果本目标可被选择，则尝试成功，使用卡牌
+            if (this->isSelected()) {
+                emit card_to_use();
+            }
+            //如果不可被选择，则尝试失败，还原到尝试之前的状态
+            else {
+                lastSelectedPlayerContainer->_onMouseClicked(Qt::LeftButton);
+            }
         }
     }
 }

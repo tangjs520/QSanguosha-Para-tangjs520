@@ -502,6 +502,22 @@ void Room::gameOver(const QString &winner) {
         removeTag("NextGameSecondGeneral");
     }
 
+    QSet<QString> winners = winner.split("+").toSet();
+    QList<ServerPlayer *> winPlayers;
+    QList<ServerPlayer *> losePlayers;
+    foreach (ServerPlayer *player, m_players) {
+        QString role = player->getRole();
+        if (winners.contains(player->objectName()) || winners.contains(role)) {
+            winPlayers << player;
+        }
+        else {
+            losePlayers << player;
+        }
+    }
+    if (!winPlayers.isEmpty() && !losePlayers.isEmpty()) {
+        doLightbox(winPlayers, "$game-win", losePlayers, "$game-lose", 3500);
+    }
+
     Json::Value arg(Json::arrayValue);
     arg[0] = toJsonString(winner);
     arg[1] = toJsonArray(all_roles);
@@ -872,20 +888,24 @@ bool Room::notifyMoveFocus(ServerPlayer *player) {
     QList<ServerPlayer *> players;
     players.append(player);
     Countdown countdown;
-    countdown.m_type = Countdown::S_COUNTDOWN_NO_LIMIT;
     return notifyMoveFocus(players, S_COMMAND_MOVE_FOCUS, countdown);
 }
 
 bool Room::notifyMoveFocus(ServerPlayer *player, CommandType command) {
     QList<ServerPlayer *> players;
     players.append(player);
+    return notifyMoveFocus(players, command);
+}
+
+bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, CommandType command)
+{
     Countdown countdown;
     countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
     countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
     return notifyMoveFocus(players, S_COMMAND_MOVE_FOCUS, countdown);
 }
 
-bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, CommandType command, Countdown countdown) {
+bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, CommandType command, const Countdown &countdown) {
     Json::Value arg(Json::arrayValue);
     int n = players.size();
     for (int i = 0; i < n; ++i)
@@ -2134,6 +2154,8 @@ bool Room::makeSurrender(ServerPlayer *initiator) {
             playersAlive << player;
         }
     }
+
+    notifyMoveFocus(playersAlive, S_COMMAND_SURRENDER);
     doBroadcastRequest(playersAlive, S_COMMAND_SURRENDER);
 
     // collect polls
@@ -2330,7 +2352,7 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 
     if (!is_robot) {
         QString greetingStr = tr("<font color=#EEB422>Player <b>%1</b> joined the game</font>").arg(screen_name);
-        speakCommand(player, Settings::toBase64(greetingStr));
+        speakCommand(NULL, Settings::toBase64(greetingStr));
 
         player->startNetworkDelayTest();
 
@@ -2478,7 +2500,9 @@ void Room::chooseGenerals(const QList<ServerPlayer *> &playerList) {
     foreach (ServerPlayer *player, to_assign)
         _setupChooseGeneralRequestArgs(player);
 
+    notifyMoveFocus(to_assign, S_COMMAND_CHOOSE_GENERAL);
     doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+
     foreach (ServerPlayer *player, to_assign) {
         if (player->getGeneral() != NULL) continue;
         Json::Value generalName = player->getClientReply();
@@ -2495,7 +2519,12 @@ void Room::chooseGenerals(const QList<ServerPlayer *> &playerList) {
         if (!Config.EnableHegemony) {
             ServerPlayer *the_lord = getLord();
             _setupChooseGeneralRequestArgs(the_lord);
-            doBroadcastRequest(QList<ServerPlayer *>() << the_lord, S_COMMAND_CHOOSE_GENERAL);
+
+            QList<ServerPlayer *> lordPlayer;
+            lordPlayer << the_lord;
+            notifyMoveFocus(lordPlayer, S_COMMAND_CHOOSE_GENERAL);
+            doBroadcastRequest(lordPlayer, S_COMMAND_CHOOSE_GENERAL);
+
             if (NULL == the_lord->getGeneral2()) {
                 Json::Value generalName = the_lord->getClientReply();
                 if (!the_lord->m_isClientResponseReady || !generalName.isString()
@@ -2513,7 +2542,9 @@ void Room::chooseGenerals(const QList<ServerPlayer *> &playerList) {
         foreach (ServerPlayer *player, to_assign)
             _setupChooseGeneralRequestArgs(player);
 
+        notifyMoveFocus(to_assign, S_COMMAND_CHOOSE_GENERAL);
         doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+
         foreach (ServerPlayer *player, to_assign) {
             if (player->getGeneral2() != NULL) continue;
             Json::Value generalName = player->getClientReply();
@@ -2946,7 +2977,12 @@ bool Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
     }
     if (broadcast) {
         Json::Value body(Json::arrayValue);
-        body[0] = toJsonString(player->objectName());
+        if (player) {
+            body[0] = toJsonString(player->objectName());
+        }
+        else {
+            body[0] = ".";
+        }
         body[1] = arg;
         doBroadcastNotify(S_COMMAND_SPEAK, body);
     }
@@ -3383,20 +3419,23 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket) {
     }
 }
 
-void Room::marshal(ServerPlayer *player) {
+void Room::marshal(ServerPlayer *player)
+{
     notifyProperty(player, player, "objectName");
     notifyProperty(player, player, "role");
     notifyProperty(player, player, "flags", "marshalling");
     notifyProperty(player, player, "ready");
 
     foreach (ServerPlayer *p, m_players) {
-        if (p != player)
+        if (p != player) {
             p->introduceTo(player);
+        }
     }
 
     QStringList player_circle;
-    foreach (ServerPlayer *player, m_players)
+    foreach (ServerPlayer *player, m_players) {
         player_circle << player->objectName();
+    }
     doNotify(player, S_COMMAND_ARRANGE_SEATS, toJsonArray(player_circle));
 
     if (startInXsCommandNotified) {
@@ -3406,12 +3445,17 @@ void Room::marshal(ServerPlayer *player) {
     foreach (ServerPlayer *p, m_players) {
         notifyProperty(player, p, "general");
 
-        if (p->getGeneral2())
+        if (p->getGeneral2()) {
             notifyProperty(player, p, "general2");
+        }
     }
 
     if (Config.EnableBasara) {
         setAnjiangNames(player, player->getBasaraGeneralNames());
+    }
+
+    foreach (ServerPlayer *p, m_players) {
+        p->marshal(player);
     }
 
     if (gameStartCommandNotified) {
@@ -3420,11 +3464,6 @@ void Room::marshal(ServerPlayer *player) {
         QList<int> drawPile = Sanguosha->getRandomCards();
         doNotify(player, S_COMMAND_AVAILABLE_CARDS, toJsonArray(drawPile));
 
-        foreach (ServerPlayer *p, m_players) {
-            p->marshal(player);
-        }
-
-        notifyProperty(player, player, "flags", "-marshalling");
         doNotify(player, S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
 
         if (!m_fillAGArg.empty()) {
@@ -3437,6 +3476,8 @@ void Room::marshal(ServerPlayer *player) {
         Json::Value discard = toJsonArray(*m_discardPile);
         doNotify(player, S_COMMAND_SYNCHRONIZE_DISCARD_PILE, discard);
     }
+
+    notifyProperty(player, player, "flags", "-marshalling");
 }
 
 void Room::startGame() {
@@ -4174,6 +4215,20 @@ void Room::doLightbox(const QString &lightboxName, int duration, int pixelSize) 
     thread->delay(duration / 1.2);
 }
 
+void Room::doLightbox(const QList<ServerPlayer *> &winPlayers, const QString &winLightboxName,
+    const QList<ServerPlayer *> &losePlayers, const QString &loseLightboxName,
+    int duration/* = 2000*/, int pixelSize/* = 0*/)
+{
+    if (Config.AIDelay == 0) {
+        return;
+    }
+
+    doAnimate(S_ANIMATE_LIGHTBOX, winLightboxName, QString("%1:%2").arg(duration).arg(pixelSize), winPlayers);
+    doAnimate(S_ANIMATE_LIGHTBOX, loseLightboxName, QString("%1:%2").arg(duration).arg(pixelSize), losePlayers);
+
+    thread->delay(duration / 1.2);
+}
+
 void Room::doAnimate(QSanProtocol::AnimateType type, const QString &arg1, const QString &arg2,
     const QList<ServerPlayer *> &players)
 {
@@ -4482,13 +4537,8 @@ void Room::askForLuckCard() {
     if (players.isEmpty())
         return;
 
-    Countdown countdown;
-    countdown.m_max = ServerInfo.getCommandTimeout(S_COMMAND_LUCK_CARD, S_CLIENT_INSTANCE);
-    countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
-
     for (int n = 0; n < Config.LuckCardLimitation; ++n) {
-        notifyMoveFocus(players, S_COMMAND_LUCK_CARD, countdown);
-
+        notifyMoveFocus(players, S_COMMAND_LUCK_CARD);
         doBroadcastRequest(players, S_COMMAND_LUCK_CARD);
 
         QList<ServerPlayer *> used;
@@ -5045,10 +5095,7 @@ QList<const Card *> Room::askForPindianRace(ServerPlayer *from, ServerPlayer *to
 
     Q_ASSERT(!from->isKongcheng() && !to->isKongcheng());
     while (isPaused()) {}
-    Countdown countdown;
-    countdown.m_max = ServerInfo.getCommandTimeout(S_COMMAND_PINDIAN, S_CLIENT_INSTANCE);
-    countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
-    notifyMoveFocus(QList<ServerPlayer *>() << from << to, S_COMMAND_PINDIAN, countdown);
+    notifyMoveFocus(QList<ServerPlayer *>() << from << to, S_COMMAND_PINDIAN);
 
     const Card *from_card = NULL, *to_card = NULL;
 
@@ -5704,7 +5751,7 @@ bool Room::networkDelayTestCommand(ServerPlayer *player, const Json::Value &) {
     QString reportStr = tr("<font color=#EEB422>The network delay of player <b>%1</b> is %2 milliseconds.</font>")
         .arg(player->screenName()).arg(QString::number(delay));
 
-    speakCommand(player, Settings::toBase64(reportStr));
+    speakCommand(NULL, Settings::toBase64(reportStr));
 
     return true;
 }
@@ -5869,7 +5916,7 @@ void Room::disconnectPlayer(ServerPlayer *player)
             QString screen_name = player->screenName();
             QString leaveStr = tr("<font color=#000000>Player <b>%1</b> left the game</font>").arg(screen_name);
 
-            speakCommand(player, Settings::toBase64(leaveStr));
+            speakCommand(NULL, Settings::toBase64(leaveStr));
         }
 
         doBroadcastNotify(S_COMMAND_REMOVE_PLAYER, toJsonString(player->objectName()));

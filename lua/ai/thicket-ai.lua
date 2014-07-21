@@ -396,6 +396,7 @@ local function getLowerBoundOfHandcard(self)
 end
 
 local function getBeggar(self)
+	self:updatePlayers()
 	local least = getLowerBoundOfHandcard(self)
 
 	self:sort(self.friends_noself)

@@ -418,6 +418,7 @@ end
 
 sgs.ai_skill_invoke.fangquan = function(self, data)
 	self.fangquan_card_str = nil
+	self:updatePlayers()
 	if #self.friends == 1 then
 		return false
 	end

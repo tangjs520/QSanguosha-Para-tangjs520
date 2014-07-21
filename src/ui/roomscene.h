@@ -234,8 +234,8 @@ private:
     void _getSceneSizes(QSize &minSize, QSize &maxSize);
     bool _shouldIgnoreDisplayMove(CardsMoveStruct &movement);
     bool _processCardsMove(CardsMoveStruct &move, bool isLost);
-    bool _m_isMouseButtonDown;
-    bool _m_isInDragAndUseMode;
+    //bool _m_isMouseButtonDown;
+    //bool _m_isInDragAndUseMode;
     const QSanRoomSkin::RoomLayout *_m_roomLayout;
     const QSanRoomSkin::PhotoLayout *_m_photoLayout;
     const QSanRoomSkin::CommonLayout *_m_commonLayout;
@@ -267,10 +267,10 @@ private:
 
     QGraphicsRectItem *pausing_item;
     QGraphicsSimpleTextItem *pausing_text;
-    
+
     QList<QGraphicsPixmapItem *> role_items;
     CardContainer *card_container;
-    
+
     QList<QSanSkillButton *> m_skillButtons;
 
     ResponseSkill *response_skill;
@@ -387,7 +387,7 @@ private slots:
     void startInXs();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
     void changeMaxHp(const QString &who, int delta);
-    void moveFocus(const QStringList &who, QSanProtocol::Countdown);
+    void moveFocus(const QStringList &who, const QSanProtocol::Countdown &countdown);
     void setEmotion(const QString &who, const QString &emotion);
     void showSkillInvocation(const QString &who, const QString &skill_name);
     void doAnimation(int name, const QStringList &args);

@@ -211,7 +211,9 @@ public:
     // Notification functions
     bool notifyMoveFocus(ServerPlayer *player);
     bool notifyMoveFocus(ServerPlayer *player, QSanProtocol::CommandType command);
-    bool notifyMoveFocus(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command, QSanProtocol::Countdown countdown);
+    bool notifyMoveFocus(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command);
+    bool notifyMoveFocus(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command,
+        const QSanProtocol::Countdown &countdown);
 
     // Notify client side to move cards from one place to another place. A movement should always be completed by
     // calling notifyMoveCards in pairs, one with isLostPhase equaling true followed by one with isLostPhase
@@ -240,6 +242,9 @@ public:
     void broadcastSkillInvoke(const QString &skillName, int type);
     void broadcastSkillInvoke(const QString &skillName, bool isMale, int type);
     void doLightbox(const QString &lightboxName, int duration = 2000, int pixelSize = 0);
+    void doLightbox(const QList<ServerPlayer *> &winPlayers, const QString &winLightboxName,
+        const QList<ServerPlayer *> &losePlayers, const QString &loseLightboxName,
+        int duration = 2000, int pixelSize = 0);
 
     void doAnimate(QSanProtocol::AnimateType type, const QString &arg1 = QString(),
         const QString &arg2 = QString(),

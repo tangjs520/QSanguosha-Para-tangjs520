@@ -54,10 +54,10 @@ void Window::addContent(const QString &content)
     content_item->setDefaultTextColor(Qt::white);
     content_item->setTextWidth(size.width() - 30);
 
-    QFont *font = new QFont();
-    font->setBold(true);
-    font->setPointSize(10);
-    content_item->setFont(*font);
+    QFont font;
+    font.setBold(true);
+    font.setPointSize(10);
+    content_item->setFont(font);
 }
 
 Button *Window::addCloseButton(const QString &label)

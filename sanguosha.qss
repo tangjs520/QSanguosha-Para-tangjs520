@@ -9,9 +9,9 @@ QProgressBar {
 
 QToolTip {
     border: 2px solid darkkhaki;
-     padding: 1px;
-     border-radius: 3px;
-     opacity: 200;
+    padding: 1px;
+    border-radius: 3px;
+    opacity: 200;
 }
 
 QTextEdit {
