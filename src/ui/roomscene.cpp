@@ -22,6 +22,7 @@
 #include "graphicspixmaphoveritem.h"
 #include "mainwindow.h"
 #include "sanuiutils.h"
+#include "bubblechatbox.h"
 
 #include <QSequentialAnimationGroup>
 #include <QGraphicsSceneMouseEvent>
@@ -237,7 +238,9 @@ RoomScene::RoomScene(QMainWindow *main_window)
     chat_box_widget->setParent(this);
     chat_box->setReadOnly(true);
     chat_box->setTextColor(Config.TextEditColor);
-    connect(ClientInstance, SIGNAL(line_spoken(QString)), this, SLOT(appendChatBox(QString)));
+    connect(ClientInstance, SIGNAL(line_spoken(const QString &)), chat_box, SLOT(append(const QString &)));
+    connect(ClientInstance, SIGNAL(player_spoken(const QString &, const QString &)),
+        this, SLOT(showBubbleChatBox(const QString &, const QString &)));
 
     // chat edit
     chat_edit = new QLineEdit;
@@ -3642,7 +3645,7 @@ void RoomScene::speak() {
             }
             QString line = tr("<font color='%1'>[%2] said: %3 </font>")
                            .arg(Config.TextEditColor.name()).arg(title).arg(text);
-            appendChatBox(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
+            chat_box->append(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
         }
     }
     chat_edit->clear();
@@ -4636,15 +4639,8 @@ void RoomScene::updateRolesBox() {
 }
 
 void RoomScene::appendChatEdit(QString txt) {
-    chat_edit->setText(chat_edit->text() +  " " + txt);
+    chat_edit->setText(chat_edit->text() + txt);
     chat_edit->setFocus();
-}
-
-void RoomScene::appendChatBox(QString txt) {
-    QString prefix = "<img src='image/system/chatface/";
-    QString suffix = ".png'></img>";
-    txt = txt.replace("<#", prefix).replace("#>", suffix);
-    chat_box->append(txt);
 }
 
 void RoomScene::setChatBoxVisible(bool show) {
@@ -4873,6 +4869,33 @@ void RoomScene::deletePromptInfoItem()
 bool RoomScene::isReturnMainMenuButtonVisible() const
 {
     return (return_main_menu && return_main_menu->isVisible());
+}
+
+void RoomScene::showBubbleChatBox(const QString &who, const QString &line)
+{
+    if (!m_bubbleChatBoxs.contains(who)) {
+        BubbleChatBox *bubbleChatBox = new BubbleChatBox(getBubbleChatBoxShowArea(who));
+        addItem(bubbleChatBox);
+        bubbleChatBox->setZValue(INT_MAX);
+        m_bubbleChatBoxs.insert(who, bubbleChatBox);
+    }
+
+    m_bubbleChatBoxs[who]->setText(line);
+}
+
+const QSize BUBBLE_CHAT_BOX_SHOW_AREA_SIZE(138, 64);
+
+QRect RoomScene::getBubbleChatBoxShowArea(const QString &who) const
+{
+    Photo *photo = name2photo.value(who, NULL);
+    if (photo) {
+        QRectF rect = photo->sceneBoundingRect();
+        return QRect(QPoint(rect.left() + 18, rect.top() + 26), BUBBLE_CHAT_BOX_SHOW_AREA_SIZE);
+    }
+    else {
+        QRectF rect = dashboard->getAvatarAreaSceneBoundingRect();
+        return QRect(QPoint(rect.left() + 8, rect.top() + 52), BUBBLE_CHAT_BOX_SHOW_AREA_SIZE);
+    }
 }
 
 PromptInfoItem::PromptInfoItem(QGraphicsItem *parent/* = 0*/)

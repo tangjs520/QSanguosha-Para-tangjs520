@@ -86,6 +86,7 @@ public:
     int AutoCloseCardContainerDelaySeconds;
     bool RandomPlayBGM;
     bool ShowMsgBoxWhenExit;
+    int BubbleChatBoxDelaySeconds;
 
     int OperationTimeout;
     bool OperationNoLimit;

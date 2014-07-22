@@ -126,6 +126,7 @@ void Settings::init() {
     AutoCloseCardContainerDelaySeconds = value("AutoCloseCardContainerDelaySeconds", 0).toInt();
     RandomPlayBGM = value("RandomPlayBGM", false).toBool();
     ShowMsgBoxWhenExit = value("ShowMsgBoxWhenExit", true).toBool();
+    BubbleChatBoxDelaySeconds = value("BubbleChatBoxDelaySeconds", 2).toInt();
 
     NullificationCountDown = value("NullificationCountDown", 8).toInt();
     OperationTimeout = value("OperationTimeout", 15).toInt();

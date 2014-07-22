@@ -50,6 +50,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->intellectualSelectionCheckBox->setChecked(Config.EnableIntellectualSelection);
     ui->doubleClickCheckBox->setChecked(Config.EnableDoubleClick);
     ui->secondsSpinBox->setValue(Config.AutoCloseCardContainerDelaySeconds);
+    ui->bubbleChatBoxDelaySpinBox->setValue(Config.BubbleChatBoxDelaySeconds);
 
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
 
@@ -190,6 +191,8 @@ void ConfigDialog::saveConfig() {
     Config.setValue("RandomPlayBGM", Config.RandomPlayBGM);
     Config.ShowMsgBoxWhenExit = ui->showMsgBoxWhenExitCheckBox->isChecked();
     Config.setValue("ShowMsgBoxWhenExit", Config.ShowMsgBoxWhenExit);
+    Config.BubbleChatBoxDelaySeconds = ui->bubbleChatBoxDelaySpinBox->value();
+    Config.setValue("BubbleChatBoxDelaySeconds", Config.BubbleChatBoxDelaySeconds);
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked() {

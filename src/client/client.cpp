@@ -2017,11 +2017,17 @@ void Client::speak(const Json::Value &speak_data)
     QString base64 = toQString(speak_data[1]);
     QString text = Settings::fromBase64(base64);
 
+    static const QString prefix("<img align=top width=14 height=14 src='image/system/chatface/");
+    static const QString suffix(".png'></img>");
+    text = text.replace("<#", prefix).replace("#>", suffix);
+
     if (who == ".") {
         QString line = tr("<font color='red'>System: %1</font>").arg(text);
         emit line_spoken(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
         return;
     }
+
+    emit player_spoken(who, QString("<p style=\"margin:3px 2px;\">%1</p>").arg(text));
 
     const ClientPlayer *from = getPlayer(who);
 

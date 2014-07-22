@@ -303,7 +303,9 @@ signals:
     void skill_acquired(const ClientPlayer *player, const QString &skill_name);
     void animated(int name, const QStringList &args);
 
+    void player_spoken(const QString &who, const QString &line);
     void line_spoken(const QString &line);
+
     void card_used();
 
     void game_started();
