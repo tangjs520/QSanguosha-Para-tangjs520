@@ -3454,16 +3454,17 @@ void Room::marshal(ServerPlayer *player)
         setAnjiangNames(player, player->getBasaraGeneralNames());
     }
 
-    foreach (ServerPlayer *p, m_players) {
-        p->marshal(player);
-    }
-
     if (gameStartCommandNotified) {
         doNotify(player, S_COMMAND_GAME_START, Json::Value::null);
 
         QList<int> drawPile = Sanguosha->getRandomCards();
         doNotify(player, S_COMMAND_AVAILABLE_CARDS, toJsonArray(drawPile));
 
+        foreach (ServerPlayer *p, m_players) {
+            p->marshal(player);
+        }
+
+        notifyProperty(player, player, "flags", "-marshalling");
         doNotify(player, S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
 
         if (!m_fillAGArg.empty()) {
@@ -3476,8 +3477,13 @@ void Room::marshal(ServerPlayer *player)
         Json::Value discard = toJsonArray(*m_discardPile);
         doNotify(player, S_COMMAND_SYNCHRONIZE_DISCARD_PILE, discard);
     }
+    else {
+        foreach (ServerPlayer *p, m_players) {
+            p->marshal(player);
+        }
 
-    notifyProperty(player, player, "flags", "-marshalling");
+        notifyProperty(player, player, "flags", "-marshalling");
+    }
 }
 
 void Room::startGame() {
