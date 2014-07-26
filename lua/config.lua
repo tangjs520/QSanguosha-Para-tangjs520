@@ -2,7 +2,7 @@
 -- and it is a little different from config.ini
 
 config = {
-	version = "20140601",
+	version = "20140727",
 	version_name = "V2",
 	mod_name = "Para",
 	big_font = 56,
@@ -238,7 +238,8 @@ config = {
 		"guanxingzhangbao->ol_guanxingzhangbao",
 		"jiaxu->sp_jiaxu",
 		"liubei->tw_liubei",
-		"madai->heg_madai|ol_madai",
+		"madai->heg_madai",
+		"nos_madai->ol_madai",
 		"nos_caocao->tw_caocao",
 		"nos_daqiao->wz_daqiao|tw_daqiao",
 		"nos_diaochan->sp_diaochan|heg_diaochan|tw_diaochan",
