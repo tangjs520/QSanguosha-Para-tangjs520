@@ -2017,7 +2017,7 @@ void Client::speak(const Json::Value &speak_data)
     QString base64 = toQString(speak_data[1]);
     QString text = Settings::fromBase64(base64);
 
-    static const QString prefix("<img align=top width=14 height=14 src='image/system/chatface/");
+    static const QString prefix("<img width=14 height=14 src='image/system/chatface/");
     static const QString suffix(".png'></img>");
     text = text.replace("<#", prefix).replace("#>", suffix);
 

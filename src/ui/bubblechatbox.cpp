@@ -12,7 +12,7 @@ const int MAX_LINE_COUNT = 2;
 const int CHAT_FACE_WIDTH = 16;
 const int BOX_LEFT_FRAME_WIDTH = 6;
 const int BOX_RIGHT_FRAME_WIDTH = 10;
-const int BOX_FRAME_HEIGHT = 30;
+const int BOX_FRAME_HEIGHT = 28;
 
 class BubbleChatLabel : public QGraphicsTextItem
 {
@@ -121,12 +121,10 @@ void BubbleChatBox::setText(const QString &text)
     m_rect.setSize(QSize(boxWidth + BOX_RIGHT_FRAME_WIDTH, height * lineCount + BOX_FRAME_HEIGHT));
 
     m_chatLabel->setPos(QPointF(BOX_LEFT_FRAME_WIDTH,
-        m_rect.center().y() - (height * lineCount) + (lineCount - 1) * (height / 2)));
-    m_chatLabel->setBoundingRect(QRectF(0, 0, boxWidth, height * lineCount));
+        m_rect.center().y() - (height * lineCount) + (lineCount - 1) * (height / 2) - (imgCount > 0 ? 1 : 0)));
+    m_chatLabel->setBoundingRect(QRectF(0, 0, boxWidth, height * lineCount + (MAX_LINE_COUNT - lineCount) * 1));
 
-    int xOffset = (m_area.width() - m_rect.width()) / 2;
-    int yOffset = (m_area.height() - m_rect.height()) / 2;
-    setPos(QPointF(m_area.left() + xOffset, m_area.top() + yOffset));
+    updatePos();
 
     if (!isVisible()) {
         show();
@@ -143,6 +141,12 @@ void BubbleChatBox::setText(const QString &text)
     m_timer.start(Config.BubbleChatBoxDelaySeconds * 1000);
 }
 
+void BubbleChatBox::setArea(const QRect &newArea)
+{
+    m_area = newArea;
+    updatePos();
+}
+
 QVariant BubbleChatBox::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemSceneHasChanged && scene()) {
@@ -156,4 +160,11 @@ void BubbleChatBox::clear()
 {
     m_timer.stop();
     hide();
+}
+
+void BubbleChatBox::updatePos()
+{
+    int xOffset = (m_area.width() - m_rect.width()) / 2;
+    int yOffset = (m_area.height() - m_rect.height()) / 2;
+    setPos(QPointF(m_area.left() + xOffset, m_area.top() + yOffset));
 }

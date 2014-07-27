@@ -19,11 +19,14 @@ public:
     virtual QPainterPath shape() const;
 
     void setText(const QString &text);
+    void setArea(const QRect &newArea);
 
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
+    void updatePos();
+
     QPixmap m_backgroundPixmap;
     QRectF m_rect;
     QRect m_area;

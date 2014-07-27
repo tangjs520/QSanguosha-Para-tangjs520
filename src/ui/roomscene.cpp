@@ -1104,6 +1104,14 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
             connect(photo, SIGNAL(enable_changed()), this, SLOT(onEnabledChange()));
         }
     }
+
+    //玩家座位确定后需要同步更新气泡聊天框的位置
+    QList<QString> names = name2photo.keys();
+    foreach (const QString &who, names) {
+        if (m_bubbleChatBoxs.contains(who)) {
+            m_bubbleChatBoxs[who]->setArea(getBubbleChatBoxShowArea(who));
+        }
+    }
 }
 
 // @todo: The following 3 fuctions are for drag & use feature. Currently they are very buggy and
