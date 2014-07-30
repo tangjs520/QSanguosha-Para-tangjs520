@@ -239,7 +239,7 @@ void PlayerCardContainer::updateAvatar() {
             QString name = Sanguosha->translate("&" + general->objectName());
             if (name.startsWith("&"))
                 name = Sanguosha->translate(general->objectName());
-            _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem, 
+            _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem,
                                                   _m_layout->m_avatarNameArea,
                                                   Qt::AlignLeft | Qt::AlignJustify, name);
         }
@@ -836,7 +836,7 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_roleComboBox = NULL;
     m_player = NULL;
     _m_selectedFrame = NULL;
-    
+
     for (int i = 0; i < S_EQUIP_AREA_LENGTH; ++i) {
         _m_equipCards[i] = NULL;
         _m_equipRegions[i] = NULL;
@@ -969,7 +969,7 @@ void PlayerCardContainer::_createControls() {
     _m_avatarArea->setFlag(QGraphicsItem::ItemStacksBehindParent);
 
     _m_avatarNameItem = new QGraphicsPixmapItem(_getAvatarParent());
-    
+
     _m_smallAvatarArea = new QGraphicsRectItem(_m_layout->m_smallAvatarArea, _getAvatarParent());
     _m_smallAvatarArea->setPen(Qt::NoPen);
     _m_smallAvatarArea->setFlag(QGraphicsItem::ItemStacksBehindParent);

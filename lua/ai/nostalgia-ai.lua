@@ -1966,7 +1966,7 @@ local function findPlayerForModifyKingdom(self, players)
 		for _, player in sgs.qlist(players) do
 			if not player:isLord() then
 				if sgs.evaluatePlayerRole(player) == "loyalist" and not player:hasSkill("huashen") then
-					local sameKingdom =lord and player:getKingdom() == lord:getKingdom() 
+					local sameKingdom =lord and player:getKingdom() == lord:getKingdom()
 					if isGood ~= sameKingdom then
 						return player
 					end
@@ -2009,7 +2009,7 @@ sgs.ai_skill_choice.nosguixin = function(self, choices)
 	if self.player:getRole() == "renegade" or self.player:getRole() == "lord" then
 		return "obtain"
 	end
-	
+
 	local lord = self.room:getLord()
 	if not lord then return "obtain" end
 

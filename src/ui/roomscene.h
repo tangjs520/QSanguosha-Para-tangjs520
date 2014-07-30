@@ -101,7 +101,7 @@ public:
 public slots:
     void setTime(int secs);
     void setSpeed(qreal speed);
-    
+
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     static const int S_BUTTON_GAP = 3;

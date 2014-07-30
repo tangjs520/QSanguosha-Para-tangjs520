@@ -71,8 +71,9 @@ config = {
 		"NostalYJCM2012",
 		"NostalYJCM2013",
 		"NostalGeneral",
-		"Dragon",
+		"JianGeDefense",
 		"BossMode",
+		"Dragon",
 		"Chaos",
 		--"LingEx",
 		--"Ling2013",
@@ -209,7 +210,7 @@ config = {
 		"nos_yuji+nos_zhangchunhua",
 		"nos_zhangchunhua+heg_luxun", "nos_zhangchunhua+nos_guanxingzhangbao",
 	},
-	
+
 	couple_lord = "caocao",
 	couple_couples = {
 		"caopi|caozhi+zhenji",
@@ -236,6 +237,7 @@ config = {
 		"dingfeng->sp_dingfeng",
 		"fazheng->ol_fazheng",
 		"guanxingzhangbao->ol_guanxingzhangbao",
+		"hetaihou->sp_hetaihou",
 		"jiaxu->sp_jiaxu",
 		"liubei->tw_liubei",
 		"madai->heg_madai",
@@ -388,6 +390,21 @@ config = {
 		"kuanggu:85",
 		"yongsi:90",
 		"zhiheng:90",
+	},
+
+	jiange_defense_kingdoms = {
+		loyalist = "shu",
+		rebel = "wei",
+	},
+
+	jiange_defense_machine = {
+		wei = "jg_machine_tuntianchiwen+jg_machine_shihuosuanni+jg_machine_fudibian",
+		shu = "jg_machine_yunpingqinglong+jg_machine_jileibaihu",
+	},
+
+	jiange_defense_soul = {
+		wei = "jg_soul_caozhen+jg_soul_simayi",
+		shu = "jg_soul_liubei+jg_soul_zhugeliang",
 	},
 
 	robot_names = {

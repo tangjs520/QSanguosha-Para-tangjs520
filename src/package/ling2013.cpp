@@ -824,7 +824,7 @@ public:
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
         Room *room = target->getRoom();
         for (int i = 1; i <= damage.damage; ++i) {
-            if (!target->askForSkillInvoke(objectName(), QVariant::fromValue(damage))) 
+            if (!target->askForSkillInvoke(objectName(), QVariant::fromValue(damage)))
                 return;
             room->broadcastSkillInvoke(objectName());
 

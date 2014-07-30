@@ -358,7 +358,7 @@ void ServerPlayer::removeCard(const Card *card, Place place) {
     case PlaceSpecial: {
             int card_id = card->getEffectiveId();
             QString pile_name = getPileName(card_id);
-            
+
             //@todo: sanity check required
             if (!pile_name.isEmpty())
                 piles[pile_name].removeOne(card_id);

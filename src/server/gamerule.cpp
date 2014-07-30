@@ -1136,6 +1136,12 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
             else
                 winner = "renegade+rebel";
         }
+    } else if (room->getMode() == "08_defense") {
+        QStringList alive_roles = room->aliveRoles(victim);
+        if (!alive_roles.contains("loyalist"))
+            winner = "rebel";
+        else if (!alive_roles.contains("rebel"))
+            winner = "loyalist";
     } else if (Config.EnableHegemony) {
         bool has_diff_kingdoms = false;
         QString init_kingdom;
@@ -1638,15 +1644,17 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *pl
 
                 const ProhibitSkill *prohibit = room->isProhibited(ces.from, ces.to, ces.card);
                 if (prohibit && ces.to->hasSkill(prohibit->objectName())) {
-                    LogMessage log;
-                    log.type = "#SkillAvoid";
-                    log.from = ces.to;
-                    log.arg  = prohibit->objectName();
-                    log.arg2 = ces.card->objectName();
-                    room->sendLog(log);
+                    if (prohibit->isVisible()) {
+                        LogMessage log;
+                        log.type = "#SkillAvoid";
+                        log.from = ces.to;
+                        log.arg  = prohibit->objectName();
+                        log.arg2 = ces.card->objectName();
+                        room->sendLog(log);
 
-                    room->broadcastSkillInvoke(prohibit->objectName());
-                    room->notifySkillInvoked(ces.to, prohibit->objectName());
+                        room->broadcastSkillInvoke(prohibit->objectName());
+                        room->notifySkillInvoked(ces.to, prohibit->objectName());
+                    }
 
                     return true;
                 }

@@ -161,28 +161,16 @@ public:
         if (triggerEvent == HpRecover) {
             RecoverStruct recover = data.value<RecoverStruct>();
             if (recover.who && recover.who != player) {
-                LogMessage log;
-                log.type = "#TriggerSkill";
-                log.from = player;
-                log.arg = objectName();
-                room->sendLog(log);
-
                 room->broadcastSkillInvoke("nosenyuan", qrand() % 2 + 1);
-                room->notifySkillInvoked(player, objectName());
+                room->sendCompulsoryTriggerLog(player, objectName());
                 recover.who->drawCards(recover.recover, objectName());
             }
         } else if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *source = damage.from;
             if (source && source != player) {
-                LogMessage log;
-                log.type = "#TriggerSkill";
-                log.from = player;
-                log.arg = objectName();
-                room->sendLog(log);
-
                 room->broadcastSkillInvoke("nosenyuan", qrand() % 2 + 3);
-                room->notifySkillInvoked(player, objectName());
+                room->sendCompulsoryTriggerLog(player, objectName());
 
                 const Card *card = room->askForCard(source, ".|heart|.|hand", "@nosenyuan-heart", data, Card::MethodNone);
                 if (card)
@@ -311,7 +299,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *shuangying, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart && shuangying->getPhase() ==  Player::Draw && TriggerSkill::triggerable(shuangying)) {
+        if (triggerEvent == EventPhaseStart && shuangying->getPhase() == Player::Draw && TriggerSkill::triggerable(shuangying)) {
             if (shuangying->askForSkillInvoke(objectName())) {
                 int card1 = room->drawCard();
                 int card2 = room->drawCard();
@@ -859,9 +847,10 @@ void NosFenchengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *
     source->setFlags("NosFenchengUsing");
     try {
         foreach (ServerPlayer *player, players) {
-            if (player->isAlive())
+            if (player->isAlive()) {
                 room->cardEffect(this, source, player);
                 room->getThread()->delay();
+            }
         }
         source->setFlags("-NosFenchengUsing");
     }
@@ -989,7 +978,6 @@ public:
                         use.to.append(target);
                         room->sortByActionOrder(use.to);
                         data = QVariant::fromValue(use);
-                        //room->getThread()->trigger(TargetConfirming, room, target, data); //rule
                     }
                 }
             }

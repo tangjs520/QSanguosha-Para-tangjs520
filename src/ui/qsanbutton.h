@@ -135,7 +135,7 @@ protected:
     bool _m_emitActivateSignal;
     bool _m_emitDeactivateSignal;
     bool _m_canEnable;
-    bool _m_canDisable; 
+    bool _m_canDisable;
     const Skill *_m_skill;
     const ViewAsSkill *_m_viewAsSkill;
 

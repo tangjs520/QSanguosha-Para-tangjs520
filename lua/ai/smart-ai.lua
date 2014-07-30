@@ -9,7 +9,7 @@ math.randomseed(tostring(os.time()):reverse():sub(1, 6))
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = (require "middleclass").class("SmartAI")
 
-version = "QSanguosha AI 20140601 (V1.414213 Alpha)"
+version = "QSanguosha AI 20140701 (V1.4142135 Alpha)"
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
 -- @param player The ServerPlayer object that want to create the AI object
@@ -392,7 +392,7 @@ function SmartAI:assignKeep(start)
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	self:sortByKeepValue(cards, true, self.kept, true)
-	
+
 	local resetCards = function(allcards)
 		local result = {}
 		for _, a in ipairs(allcards) do
@@ -407,7 +407,7 @@ function SmartAI:assignKeep(start)
 		end
 		return result
 	end
-	
+
 	local cards_num = #cards
 	for i = 1, cards_num do
 		local card = cards[1]
@@ -459,7 +459,7 @@ function SmartAI:getKeepValue(card, kept, wrt)
 		local suit_string = card:getSuitString()
 		local number = card:getNumber()
 		local i = 0
-		
+
 		for _, askill in ipairs(sgs.getPlayerSkillList(self.player)) do
 			if sgs[askill:objectName() .. "_suit_value"] then
 				local v = sgs[askill:objectName() .. "_suit_value"][suit_string]
@@ -470,7 +470,7 @@ function SmartAI:getKeepValue(card, kept, wrt)
 			end
 		end
 		if i > 0 then value_suit = value_suit / i end
-		
+
 		i = 0
 		for _, askill in ipairs(sgs.getPlayerSkillList(self.player)) do
 			if sgs[askill:objectName() .. "_number_value"] then
@@ -483,7 +483,7 @@ function SmartAI:getKeepValue(card, kept, wrt)
 		end
 		if i > 0 then value_number = value_number / i end
 	end
-	
+
 	local maxvalue, mostvaluable_class = -10, card:getClassName()
 	for k, v in pairs(self.keepdata) do
 		if isCard(k, card, self.player) and v > maxvalue then
@@ -491,11 +491,11 @@ function SmartAI:getKeepValue(card, kept, wrt)
 			mostvaluable_class = k
 		end
 	end
-	
+
 	newvalue = maxvalue + value_suit + value_number
-	
+
 	if wrt then return newvalue end
-	
+
 	newvalue = self.keepValue[card:getId()] or 0
 	local dec = 0
 	for _, acard in ipairs(kept) do
@@ -846,7 +846,7 @@ function SmartAI:sortByKeepValue(cards, inverse, kept, wrt)
 			self.keepValue[a:getId()] = v1
 			self.keepValue[b:getId()] = v2
 		end
-		
+
 		if v1 ~= v2 then
 			if inverse then return v1 > v2 end
 			return v1 < v2
@@ -950,7 +950,7 @@ function sgs.isRolePredictable(classical)
 	local mode = string.lower(global_room:getMode())
 	local isMini = (mode:find("mini") or mode:find("custom_scenario"))
 	if (not mode:find("0") and not isMini) or mode:find("02p") or mode:find("02_1v1") or mode:find("04_1v3") or mode:find("04_boss")
-		or mode == "06_3v3" or mode == "06_xmode" or (not classical and isMini) then return true end
+		or mode == "06_3v3" or mode == "06_xmode" or mode == "08_defense" or (not classical and isMini) then return true end
 	return false
 end
 
@@ -998,7 +998,7 @@ sgs.ai_card_intention.general = function(from, to, level)
 	if sgs.evaluatePlayerRole(to) == "rebel" then
 		if ((sgs.role_evaluation[from:objectName()]["loyalist"] < -50 and level > 0) or (sgs.role_evaluation[from:objectName()]["loyalist"] > 0 and level < 0))
 			and sgs.current_mode_players["renegade"] > 0 then
-			sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + math.abs(level) 
+			sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + math.abs(level)
 		end
 		sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] + level
 	end
@@ -2795,7 +2795,7 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, return_value)
 	from = from or self.room:getCurrent()
 	to = to or self.player
 	local is_friend = self:isFriend(from, to)
-	if not from:hasSkill("jueqing") and to:hasArmorEffect("silver_lion") then
+	if not from:hasSkill("jueqing") and self:hasSilverLionEffect(to) then
 		if return_value then return 1 else return false end
 	end
 	local dmg = 1
@@ -3607,7 +3607,7 @@ function SmartAI:needRetrial(judge)
 		if who:hasSkills("wuyan|hongyan") then return false end
 
 		if lord and (who:isLord() or (who:isChained() and lord:isChained())) and self:objectiveLevel(lord) <= 3 then
-			if lord:hasArmorEffect("silver_lion") and lord:getHp() >= 2 and self:isGoodChainTarget(lord, self.player, sgs.DamageStruct_Thunder) then return false end
+			if self:hasSilverLionEffect(lord) and lord:getHp() >= 2 and self:isGoodChainTarget(lord, self.player, sgs.DamageStruct_Thunder) then return false end
 			return self:damageIsEffective(lord, sgs.DamageStruct_Thunder) and not good
 		end
 
@@ -4731,10 +4731,10 @@ function SmartAI:getAoeValue(card, player)
 
 		local goodnull, badnull = 0, 0
 		for _, p in sgs.qlist(self.room:getAlivePlayers()) do
-			if self:isFriend(lord, p) then 
-				goodnull = goodnull + getCardsNum("Nullification", p, from) 
+			if self:isFriend(lord, p) then
+				goodnull = goodnull + getCardsNum("Nullification", p, from)
 			else
-				badnull = badnull + getCardsNum("Nullification", p, from) 
+				badnull = badnull + getCardsNum("Nullification", p, from)
 			end
 		end
 		return goodnull - null_num - badnull >= 2
@@ -4972,6 +4972,13 @@ function SmartAI:hasCrossbowEffect(player)
 	return player:hasWeapon("Crossbow") or player:hasSkill("paoxiao")
 end
 
+function SmartAI:hasSilverLionEffect(player)
+	player = player or self.player
+	if player:hasArmorEffect("silver_lion") then return true end
+	local zidan = self.room:findPlayerBySkillName("jgchiying")
+	if zidan and zidan:getRole() == player:getRole() then return true end
+end
+
 sgs.ai_weapon_value = {}
 
 function SmartAI:evaluateWeapon(card, player, enemy)
@@ -5205,13 +5212,13 @@ function SmartAI:damageMinusHp(self, enemy, type)
 					slash_damagenum = slash_damagenum + 1
 				end
 				if self:getCardsNum("Analeptic") > 0 and analepticpowerup == 0
-					and not (enemy:hasArmorEffect("silver_lion") or self:hasEightDiagramEffect(enemy)) then
+					and not (self:hasSilverLionEffect(enemy) or self:hasEightDiagramEffect(enemy)) then
 						slash_damagenum = slash_damagenum + 1
 						analepticpowerup = analepticpowerup + 1
 				end
 				if self.player:hasWeapon("guding_blade")
 					and (enemy:isKongcheng() or (self.player:hasSkill("lihun") and enemy:isMale() and not enemy:hasSkill("kongcheng")))
-					and not enemy:hasArmorEffect("silver_lion") then
+					and not self:hasSilverLionEffect(enemy) then
 					slash_damagenum = slash_damagenum + 1
 				end
 			end
@@ -5553,6 +5560,7 @@ dofile "lua/ai/standard-ai.lua"
 dofile "lua/ai/basara-ai.lua"
 dofile "lua/ai/boss-ai.lua"
 dofile "lua/ai/hulaoguan-ai.lua"
+dofile "lua/ai/jiange_defense-ai.lua"
 dofile "lua/ai/conversion-ai.lua"
 
 local loaded = "standard|standard_cards|maneuvering"

@@ -327,6 +327,8 @@ sgs.ai_skill_askforyiji.qingjian = function(self, card_ids)
 end
 
 function SmartAI:getTuxiTargets(reason, isDummy)
+	if self.player:getPile("yiji"):length() > 1 then return {} end
+
 	reason = reason or "tuxi"
 	self:sort(self.enemies, "handcard")
 	local upperlimit = (reason == "tuxi") and self.player:getMark("tuxi") or (reason == "koftuxi" and 1 or 2)
@@ -488,6 +490,7 @@ sgs.ai_card_intention.TuxiCard = function(self, card, from, tos)
 end
 
 sgs.ai_skill_invoke.luoyi = function(self)
+	if self.player:getPile("yiji"):length() > 1 then return false end
 	local diaochan = self.room:findPlayerBySkillName("lijian") or self.room:findPlayerBySkillName("noslijian")
 	if diaochan and self:isEnemy(diaochan) then
 		for _, friend in ipairs(self.friends_noself) do
@@ -899,7 +902,7 @@ sgs.ai_skill_use["@@rende"] = function(self, prompt)
 			self:useTrickCard(card, dummy_use)
 			if dummy_use.card then continue end
 		end
-		
+
 		local usecard
 		if friend:hasSkill("enyuan") and #cards >= 1 and not (self.room:getMode() == "04_1v3" and self.player:getMark("nosrende") == 1) then
 			usecard = "@RendeCard=" .. card:getId() .. "+" .. cards[1]:getId()
@@ -926,7 +929,7 @@ sgs.ai_skill_invoke.jijiang = function(self, data)
 	local asked = data:toStringList()
 	local prompt = asked[2]
 	if self:askForCard("slash", prompt, 1) == "." then return false end
-	
+
 	local current = self.room:getCurrent()
 	if self:isFriend(current) and current:getKingdom() == "shu" and self:getOverflow(current) > 2 and not self:hasCrossbowEffect(current) then
 		return true
@@ -3008,7 +3011,7 @@ function SmartAI:findLijianTarget(card_name, use)
 
 	if lord and lord:objectName() ~= self.player:objectName() and self:isFriend(lord)
 		and lord:hasSkill("hunzi") and lord:getHp() == 2 and lord:getMark("hunzi") == 0 then
-		local enemycount = self:getEnemyNumBySeat(self.player, lord) 
+		local enemycount = self:getEnemyNumBySeat(self.player, lord)
 		local peaches = self:getAllPeachNum()
 		if peaches >= enemycount then
 			local f_target, e_target

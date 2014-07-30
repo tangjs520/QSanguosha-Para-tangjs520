@@ -911,8 +911,12 @@ void DanshouCard::onEffect(const CardEffectStruct &effect) const{
             break;
     case 2:
             if (!effect.to->isNude()) {
-                int id = room->askForCardChosen(effect.from, effect.to, "he", "danshou");
-                room->obtainCard(effect.from, id, false);
+                const Card *card = room->askForExchange(effect.to, "danshou", 1, 1, true, "@danshou-give::" + effect.from->objectName());
+                if (card) {
+                    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, effect.to->objectName(), effect.from->objectName(), "danshou", QString());
+                    room->obtainCard(effect.from, card, reason, false);
+                    delete card;
+                }
             }
             break;
     case 3:
@@ -1089,9 +1093,10 @@ void FenchengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
     source->setFlags("FenchengUsing");
     try {
         foreach (ServerPlayer *player, players) {
-            if (player->isAlive())
+            if (player->isAlive()) {
                 room->cardEffect(this, source, player);
                 room->getThread()->delay();
+            }
         }
         source->setFlags("-FenchengUsing");
     }
@@ -1208,7 +1213,7 @@ public:
                 const Card *card = NULL;
                 if (!target->isKongcheng())
                     card = room->askForCard(target, "Jink", "@qiuyuan-give:" + player->objectName(), data, Card::MethodNone);
-                CardMoveReason reason(CardMoveReason::S_REASON_GIVE, target->objectName(), player->objectName(), "nosqiuyuan", QString());
+                CardMoveReason reason(CardMoveReason::S_REASON_GIVE, target->objectName(), player->objectName(), "qiuyuan", QString());
                 if (!card) {
                     if (use.from->canSlash(target, use.card, false)) {
                         LogMessage log;
@@ -1222,7 +1227,6 @@ public:
                         use.to.append(target);
                         room->sortByActionOrder(use.to);
                         data = QVariant::fromValue(use);
-                        //room->getThread()->trigger(TargetConfirming, room, target, data); //rule
                     }
                 } else {
                     room->obtainCard(player, card, reason);

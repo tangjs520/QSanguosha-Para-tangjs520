@@ -94,9 +94,9 @@ AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b) {
 
     QString roleA = a->getRole();
     QString roleB = b->getRole();
-    
+
     Room *room = a->getRoom();
-    
+
     int good = 0, bad = 0;
     QList<ServerPlayer *> players = room->getAlivePlayers();
     foreach (ServerPlayer *player, players) {
@@ -112,7 +112,7 @@ AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b) {
         return map_bad.get(roleA, roleB);
     else if (good > bad)
         return map_good.get(roleA, roleB);
-    else 
+    else
         return map.get(roleA, roleB);
 }
 

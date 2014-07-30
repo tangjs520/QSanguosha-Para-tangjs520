@@ -48,7 +48,7 @@ QImage SanUiUtils::produceShadow(const QImage &image,
     }
 
     for (int y = 0; y < rows; ++y)
-    {        
+    {
         for (int x = 0; x < cols; ++x)
         {
             uchar oldVal = OLD_PIXEL(x, y);

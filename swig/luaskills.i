@@ -614,7 +614,7 @@ const Card *LuaFilterSkill::viewAs(const Card *originalCard) const{
         Error(L);
         return NULL;
     }
-    
+
     void *card_ptr;
     int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
     lua_pop(L, 1);

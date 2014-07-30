@@ -862,7 +862,7 @@ QGroupBox *ServerDialog::createGameModeBox() {
     mini_scene_ComboBox = new QComboBox;
     int index = -1;
     int stage = qMin(Sanguosha->getMiniSceneCounts(), Config.value("MiniSceneStage", 1).toInt());
-        
+
     for (int i = 1; i <= stage; ++i) {
         QString name = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(i));
         QString scenario_name = Sanguosha->translate(name);
@@ -883,9 +883,9 @@ QGroupBox *ServerDialog::createGameModeBox() {
     mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
     connect(mini_scene_button, SIGNAL(clicked()), this, SLOT(doCustomAssign()));
 
-    mini_scene_button->setEnabled(mode_group->checkedButton() ?
-                                      mode_group->checkedButton()->objectName() == "mini" :
-                                      false);
+    mini_scene_button->setEnabled(mode_group->checkedButton()
+        ? mode_group->checkedButton()->objectName() == "mini"
+        : false);
 
     item_list << HLay(scenario_button, scenario_ComboBox);
     item_list << HLay(mini_scenes, mini_scene_ComboBox);
@@ -899,7 +899,7 @@ QGroupBox *ServerDialog::createGameModeBox() {
     for (int i = 0; i < item_list.length(); ++i) {
         QObject *item = item_list.at(i);
 
-        QVBoxLayout *side = i <= item_list.length() / 2 - 3 ? left : right;
+        QVBoxLayout *side = (i <= 9 ? left : right); // WARNING: Magic Number
 
         if (item->isWidgetType()) {
             QWidget *widget = qobject_cast<QWidget *>(item);

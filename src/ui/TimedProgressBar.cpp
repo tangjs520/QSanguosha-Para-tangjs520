@@ -90,7 +90,7 @@ void QSanCommandProgressBar::paintEvent(QPaintEvent *) {
 
     if (orientation() == Qt::Vertical) {
         painter.translate(0, height);
-        qSwap(width, height); 
+        qSwap(width, height);
         painter.rotate(-90);
     }
 

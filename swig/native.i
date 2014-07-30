@@ -94,25 +94,25 @@ static int SetConfig(lua_State *lua) {
     case LUA_TNUMBER: {
             int n = luaL_checkint(lua, 2);
             Config.setValue(key, n);
-            
+
             break;
         }
     case LUA_TBOOLEAN: {
             bool b = lua_toboolean(lua, 2);
             Config.setValue(key, b);
-            
+
             break;
         }
     case LUA_TSTRING: {
             const char *str = luaL_checkstring(lua, 2);
             Config.setValue(key, str);
-            
+
             break;
         }
     default:
         luaL_error(lua, "The second argument of %s should be a number, boolean or a string", __FUNCTION__);
     }
-    
+
     return 0;
 }
 

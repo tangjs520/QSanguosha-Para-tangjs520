@@ -496,7 +496,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
         addCopyAction(death_button);
     }
 
-     if (general_name.contains("caocao")) {
+    if (general_name.contains("caocao")) {
         QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
                                                                 tr("Six dragons lead my chariot, "
                                                                    "I will ride the wind with the greatest speed."

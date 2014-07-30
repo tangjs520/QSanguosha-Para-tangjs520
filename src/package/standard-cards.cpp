@@ -805,12 +805,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
     bool drwushuang_effect = true;
     if (slash && effect.from->hasSkill("drwushuang")) {
         room->broadcastSkillInvoke("wushuang");
-
-        LogMessage log;
-        log.from = effect.from;
-        log.arg = "drwushuang";
-        log.type = "#TriggerSkill";
-        room->sendLog(log);
+        room->sendCompulsoryTriggerLog(effect.from, "drwushuang");
 
         drwushuang_effect = room->askForDiscard(effect.to, "drwushuang", 1, 1, true, true);
     }
@@ -848,12 +843,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
     bool drwushuang_effect = true;
     if (jink && effect.from->hasSkill("drwushuang")) {
         room->broadcastSkillInvoke("wushuang");
-
-        LogMessage log;
-        log.from = effect.from;
-        log.arg = "drwushuang";
-        log.type = "#TriggerSkill";
-        room->sendLog(log);
+        room->sendCompulsoryTriggerLog(effect.from, "drwushuang");
 
         drwushuang_effect = room->askForDiscard(effect.to, "drwushuang", 1, 1, true, true);
     }

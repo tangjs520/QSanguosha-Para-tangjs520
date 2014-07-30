@@ -4,7 +4,7 @@
 #include "engine.h"
 #include "settings.h"
 #include "clientstruct.h"
-#include <fstream>
+#include <QFile>
 #include <QGraphicsPixmapItem>
 #include <QTextItem>
 #include <QStyleOptionGraphicsItem>
@@ -15,7 +15,6 @@
 #include <QFile>
 #include <QPixmapCache>
 
-using namespace std;
 using namespace QSanProtocol::Utils;
 
 const char *IQSanComponentSkin::S_SKIN_KEY_DEFAULT = "default";
@@ -111,7 +110,7 @@ QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName,
 }
 
 QPixmap QSanRoomSkin::getSkillButtonPixmap(QSanButton::ButtonState state,
-                                           QSanInvokeSkillButton::SkillType type, 
+                                           QSanInvokeSkillButton::SkillType type,
                                            QSanInvokeSkillButton::SkillButtonWidth width) const{
     QString path = getButtonPixmapPath(S_SKIN_KEY_BUTTON_SKILL,
                                        QSanInvokeSkillButton::getSkillTypeString(type),
@@ -413,14 +412,14 @@ QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect, QSiz
     Qt::Alignment hAlign = m_anchorParent & Qt::AlignHorizontal_Mask;
     if (hAlign & Qt::AlignRight)
         parentAnchor.setX(parentRect.right());
-    else if (hAlign & Qt::AlignHCenter) 
+    else if (hAlign & Qt::AlignHCenter)
         parentAnchor.setX(parentRect.center().x());
     else
         parentAnchor.setX(parentRect.left());
     Qt::Alignment vAlign = m_anchorParent & Qt::AlignVertical_Mask;
     if (vAlign & Qt::AlignBottom)
         parentAnchor.setY(parentRect.bottom());
-    else if (vAlign & Qt::AlignVCenter) 
+    else if (vAlign & Qt::AlignVCenter)
         parentAnchor.setY(parentRect.center().y());
     else
         parentAnchor.setY(parentRect.top());
@@ -436,7 +435,7 @@ QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect, QSiz
     vAlign = m_anchorChild & Qt::AlignVertical_Mask;
     if (vAlign & Qt::AlignBottom)
         childAnchor.setY(size.height());
-    else if (vAlign & Qt::AlignVCenter) 
+    else if (vAlign & Qt::AlignVCenter)
         childAnchor.setY(size.height() / 2);
     else
         childAnchor.setY(0);
@@ -501,9 +500,10 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
 
     if (!layoutConfigName.isNull()) {
         Json::Reader reader;
-        ifstream layoutFile(layoutConfigName.toAscii());
+        QFile layoutFile(layoutConfigName.toAscii());
+        layoutFile.open(QFile::ReadOnly);
         Json::Value layoutConfig;
-        if (layoutFile.bad() || !reader.parse(layoutFile, layoutConfig) || !layoutConfig.isObject()) {
+        if (!reader.parse(layoutFile.readAll().constData(), layoutConfig) || !layoutConfig.isObject()) {
             errorMsg = QString("Error when reading layout config file \"%1\": \n%2")
                                .arg(layoutConfigName).arg(reader.getFormattedErrorMessages().c_str());
             QMessageBox::warning(NULL, "Config Error", errorMsg);
@@ -515,11 +515,10 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
 
     if (!imageConfigName.isNull()) {
         Json::Reader reader;
-        ifstream imageFile(imageConfigName.toAscii());
+        QFile imageFile(imageConfigName.toAscii());
+        imageFile.open(QFile::ReadOnly);
         Json::Value imageConfig;
-        if (imageFile.bad()
-            || !reader.parse(imageFile, imageConfig)
-            || !imageConfig.isObject()) {
+        if (!reader.parse(imageFile.readAll().constData(), imageConfig) || !imageConfig.isObject()) {
             errorMsg = QString("Error when reading image config file \"%1\": \n%2")
                                .arg(imageConfigName).arg(reader.getFormattedErrorMessages().c_str());
             QMessageBox::warning(NULL, "Config Error", errorMsg);
@@ -531,10 +530,9 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
 
     if (!audioConfigName.isNull()) {
         Json::Reader reader;
-        ifstream audioFile(audioConfigName.toAscii());
-        if (audioFile.bad()
-            || !reader.parse(audioFile, _m_audioConfig)
-            || !_m_audioConfig.isObject()) {
+        QFile audioFile(audioConfigName.toAscii());
+        audioFile.open(QFile::ReadOnly);
+        if (!reader.parse(audioFile.readAll().constData(), _m_audioConfig) || !_m_audioConfig.isObject()) {
             errorMsg = QString("Error when reading audio config file \"%1\": \n%2")
                                .arg(audioConfigName).arg(reader.getFormattedErrorMessages().c_str());
             QMessageBox::warning(NULL, "Config Error", errorMsg);
@@ -545,10 +543,9 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
 
     if (!animationConfigName.isNull()) {
         Json::Reader reader;
-        ifstream animFile(animationConfigName.toAscii());
-        if (animFile.bad()
-            || !reader.parse(animFile, _m_animationConfig)
-            || !_m_animationConfig.isObject()) {
+        QFile animFile(animationConfigName.toAscii());
+        animFile.open(QFile::ReadOnly);
+        if (!reader.parse(animFile.readAll().constData(), _m_animationConfig) || !_m_animationConfig.isObject()) {
             errorMsg = QString("Error when reading animation config file \"%1\": \n%2")
                                .arg(animationConfigName).arg(reader.getFormattedErrorMessages().c_str());
             QMessageBox::warning(NULL, "Config Error", errorMsg);
@@ -795,7 +792,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     tryParse(config["cardFrameArea"], _m_commonLayout.m_cardFrameArea);
     tryParse(config["cardFootnoteArea"], _m_commonLayout.m_cardFootnoteArea);
     tryParse(config["cardAvatarArea"], _m_commonLayout.m_cardAvatarArea);
-    tryParse(config["chooseGeneralBoxSwitchIconSizeThreshold"], 
+    tryParse(config["chooseGeneralBoxSwitchIconSizeThreshold"],
              _m_commonLayout.m_chooseGeneralBoxSwitchIconSizeThreshold);
     tryParse(config["chooseGeneralBoxSwitchIconEachRow"],
              _m_commonLayout.m_chooseGeneralBoxSwitchIconEachRow);
@@ -1069,7 +1066,7 @@ bool QSanSkinScheme::load(Json::Value configs) {
     if (!configs.isObject()) return false;
 
     QString layoutFile, imageFile, audioFile, animFile;
-    tryParse(configs["roomLayoutConfigFile"], layoutFile); 
+    tryParse(configs["roomLayoutConfigFile"], layoutFile);
     tryParse(configs["roomImageConfigFile"], imageFile);
     tryParse(configs["roomAudioConfigFile"], audioFile);
     tryParse(configs["roomAnimationConfigFile"], animFile);
@@ -1132,8 +1129,9 @@ bool QSanSkinFactory::switchSkin(const QString &skinName) {
 QSanSkinFactory::QSanSkinFactory() {
     Json::Reader reader;
 
-    ifstream file(_m_skinListFileName.toAscii().constData());
-    reader.parse(file, this->_m_skinList, false);
+    QFile file(_m_skinListFileName);
+    file.open(QFile::ReadOnly);
+    reader.parse(file.readAll().constData(), this->_m_skinList, false);
     file.close();
 
     switchSkin(S_DEFAULT_SKIN_NAME);

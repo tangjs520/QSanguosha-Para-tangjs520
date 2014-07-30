@@ -122,7 +122,11 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::restoreFromConfig() {
     resize(Config.value("WindowSize", QSize(1366, 706)).toSize());
     move(Config.value("WindowPosition", QPoint(-8, -8)).toPoint());
-    setWindowState((Qt::WindowState)Config.value("WindowState", 0).toInt());
+    Qt::WindowStates window_state = static_cast<Qt::WindowStates>(Config.value("WindowState", 0).toInt());
+    if (window_state & Qt::WindowMinimized) {
+        window_state &= ~Qt::WindowMinimized;
+    }
+    setWindowState(window_state);
 
     QFont font;
     if (Config.UIFont != font)

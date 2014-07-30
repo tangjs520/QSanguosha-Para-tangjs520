@@ -125,7 +125,7 @@ function sgs.CreateMasochismSkill(spec)
 		spec.on_damaged(skill, player, damage)
 		return false
 	end
-	
+
 	return sgs.CreateTriggerSkill(spec)
 end
 
@@ -190,7 +190,7 @@ function sgs.CreateSkillCard(spec)
 	if type(spec.can_recast) == "boolean" then
 		card:setCanRecast(spec.can_recast)
 	end
-		
+
 	if type(spec.handling_method) == "number" then
 		card:setHandlingMethod(spec.handling_method)
 	end

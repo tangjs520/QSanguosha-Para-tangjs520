@@ -540,7 +540,7 @@ const Card *Card::Parse(const QString &str) {
 Card *Card::Clone(const Card *card) {
     Card::Suit suit = card->getSuit();
     int number = card->getNumber();
-    
+
     QObject *card_obj = NULL;
     if (card->isKindOf("LuaBasicCard")) {
         const LuaBasicCard *lcard = qobject_cast<const LuaBasicCard *>(card);
@@ -590,7 +590,7 @@ bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_s
 bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
                         int &maxVotes) const{
     bool canSelect = targetFilter(targets, to_select, Self);
-    maxVotes = canSelect ? 1 : 0; 
+    maxVotes = canSelect ? 1 : 0;
     return canSelect;
 }
 

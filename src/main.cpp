@@ -96,7 +96,6 @@ int main(int argc, char *argv[]) {
 
     MainWindow main_window;
     Sanguosha->setParent(&main_window);
-
     main_window.show();
 
     foreach (const QString &arg, qApp->arguments()) {

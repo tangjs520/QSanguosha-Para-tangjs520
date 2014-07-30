@@ -4,12 +4,12 @@ function SmartAI:canAttack(enemy, attacker, nature)
 	nature = nature or sgs.DamageStruct_Normal
 	if not self:damageIsEffective(enemy, nature, attacker) then return false end
 	local damage = 1
-	if nature == sgs.DamageStruct_Fire and not enemy:hasArmorEffect("silver_lion") then
+	if nature == sgs.DamageStruct_Fire and not self:hasSilverLionEffect(enemy) then
 		if enemy:hasArmorEffect("vine") then damage = damage + 1 end
 		if enemy:getMark("@gale") > 0 then damage = damage + 1 end
 	end
 	if self:getDamagedEffects(enemy, attacker) or (self:needToLoseHp(enemy, attacker, false, true) and #self:getEnemies(attacker) > 1) or not sgs.isGoodTarget(enemy, self.enemies, self) then return false end
-	if self:objectiveLevel(enemy) <= 2 or self:cantbeHurt(enemy, self.player, damage) or not self:damageIsEffective(enemy, nature, attacker) then return false end
+	if self:objectiveLevel(enemy) <= 2 or self:cantbeHurt(enemy, self.player, damage) then return false end
 	if nature ~= sgs.DamageStruct_Normal and enemy:isChained() and not self:isGoodChainTarget(enemy, self.player, nature) then return false end
 	return true
 end
@@ -110,7 +110,7 @@ function sgs.getDefenseSlash(player, self)
 	local knownJink = getKnownCard(player, nil, "Jink", true)
 	if sgs.card_lack[player:objectName()]["Jink"] == 1 and knownJink == 0 then defense = 0 end
 	defense = defense + knownJink * 1.2
-	
+
 	local jink = sgs.cloneCard("jink")
 	if player:isCardLimited(jink, sgs.Card_MethodUse) then defense = 0 end
 
@@ -220,7 +220,8 @@ function sgs.getDefenseSlash(player, self)
 		if player:getHp() <= 1 then defense = defense - 2.5 end
 		if player:getHp() == 2 then defense = defense - 1.5 end
 		if not hasEightDiagram then defense = defense - 2 end
-		if attacker:hasWeapon("guding_blade") and attacker:objectName() ~= player:objectName() and not player:hasArmorEffect("silver_lion") and not attacker:hasWeapon("qinggang_sword") then
+		if attacker:hasWeapon("guding_blade") and attacker:objectName() ~= player:objectName()
+			and not player:hasArmorEffect("silver_lion") and not attacker:hasWeapon("qinggang_sword") then
 			defense = defense - 2
 		end
 	end
@@ -556,7 +557,7 @@ function SmartAI:useCardSlash(card, use)
 				end
 				if not isGood then continue end
 			end
- 
+
 			-- fill the card use struct
 			local usecard = card
 			if not use.to or use.to:isEmpty() then
@@ -1123,13 +1124,13 @@ sgs.ai_skill_invoke.ice_sword = function(self, data)
 end
 
 function sgs.ai_slash_weaponfilter.guding_blade(self, to)
-	return to:isKongcheng() and not to:hasArmorEffect("silver_lion")
+	return to:isKongcheng() and not self:hasSilverLionEffect(to)
 end
 
 function sgs.ai_weapon_value.guding_blade(self, enemy)
 	if not enemy then return end
 	local value = 2
-	if enemy:getHandcardNum() < 1 and not enemy:hasArmorEffect("silver_lion") then value = 4 end
+	if enemy:getHandcardNum() < 1 and not self:hasSilverLionEffect(enemy) then value = 4 end
 	return value
 end
 
@@ -1766,7 +1767,7 @@ function SmartAI:useCardDuel(duel, use)
 				elseif n1 >= enemySlash and not targets[i]:hasSkill("danlao") and not (lx and self:isEnemy(lx) and lx:getHp() > targets_num / 2) then
 					use.to:append(targets[i])
 				end
-				if not setFlag and self.player:getPhase() == sgs.Player_Play and self:isEnemy(targets[i]) then 
+				if not setFlag and self.player:getPhase() == sgs.Player_Play and self:isEnemy(targets[i]) then
 					self.player:setFlags("AI_DuelTo_" .. targets[i]:objectName())
 					setFlag = true
 				end
@@ -2884,7 +2885,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		end
 	end
 
-	if nullification and (self:getCardsNum("Nullification") < 2 or not nextPlayerCanUse) then 
+	if nullification and (self:getCardsNum("Nullification") < 2 or not nextPlayerCanUse) then
 		return nullification
 	end
 
@@ -2989,7 +2990,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 				if self:slashIsEffective(slash, enemy) and self.player:canSlash(enemy, slash) and self:slashIsAvailable() then
 					hit_num = hit_num + 1
 					if getCardsNum("Jink", enemy, self.player) < 1
-						or enemy:isKongcheng() 
+						or enemy:isKongcheng()
 						or self.player:hasSkills("tieji|nostieji|liegong|kofliegong|wushuang|dahe|qianxi")
 						or self.player:hasSkill("roulin") and enemy:isFemale()
 						or (self.player:hasWeapon("axe") or self:getCardsNum("Axe") > 0) and self.player:getCards("he"):length() > 4 then
@@ -3010,7 +3011,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		self:sort(self.enemies, "defense")
 
 		if crossbow then
-			if self:getCardsNum("Slash") > 1 or self.player:hasSkills("noskurou|keji") 
+			if self:getCardsNum("Slash") > 1 or self.player:hasSkills("noskurou|keji")
 				or (self.player:hasSkills("luoshen|yongsi|luoying|guzheng") and not selfIsCurrent and self.room:alivePlayerCount() >= 4) then
 				return crossbow
 			end
@@ -3059,7 +3060,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 			local range_fix = current_range - 3
 			local FFFslash = self:getCard("FireSlash")
 			for _, enemy in ipairs(self.enemies) do
-				if enemy:hasArmorEffect("vine") and FFFslash and self:slashIsEffective(FFFslash, enemy) and 
+				if enemy:hasArmorEffect("vine") and FFFslash and self:slashIsEffective(FFFslash, enemy) and
 					self.player:getCardCount() >= 3 and self.player:canSlash(enemy, FFFslash, true, range_fix) then
 					return axe
 				elseif self:getCardsNum("Analeptic") > 0 and self.player:getCardCount() >= 4 and

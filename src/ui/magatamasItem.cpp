@@ -33,7 +33,7 @@ void MagatamasBoxItem::_updateLayout() {
     for (int i = 1; i < 6; ++i) {
         QSize bgSize;
         if (this->m_orientation == Qt::Horizontal) {
-            bgSize.setWidth((xStep + 1) * i); 
+            bgSize.setWidth((xStep + 1) * i);
             bgSize.setHeight(m_iconSize.height());
         } else {
             bgSize.setWidth((yStep + 1) * i);
@@ -152,7 +152,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp) {
         QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
         group->addAnimation(fade);
         group->addAnimation(grow);
-        
+
         group->start(QAbstractAnimation::DeleteWhenStopped);
 
         aniMaga->show();
@@ -172,7 +172,7 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
         xStep = 0;
         yStep = m_iconSize.height();
     }
-    
+
     if (m_showBackground) {
         if (this->m_orientation == Qt::Vertical) {
             painter->save();

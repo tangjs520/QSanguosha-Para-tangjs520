@@ -168,7 +168,7 @@ protected:
     // sync objects
     QMutex m_mutex;
     QMutex m_mutexEnableCards;
-    
+
     QSanButton *m_btnReverseSelection;
     QSanButton *m_btnSortHandcard;
     QSanButton *m_btnNoNullification;

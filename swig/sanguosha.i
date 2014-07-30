@@ -915,7 +915,7 @@ public:
     const Scenario *getScenario(const char *name) const;
 
     const General *getGeneral(const char *name) const;
-    int getGeneralCount(bool include_banned = false) const;
+    int getGeneralCount(bool include_banned = false, const char *kingdom = "") const;
     const Skill *getSkill(const char *skill_name) const;
     const TriggerSkill *getTriggerSkill(const char *skill_name) const;
     const ViewAsSkill *getViewAsSkill(const char *skill_name) const;
@@ -933,10 +933,10 @@ public:
 
     QStringList getLords(bool contain_banned = false) const;
     QStringList getRandomLords() const;
-    QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
+    QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>(), const char *kingdom = "") const;
     QList<int> getRandomCards() const;
     QString getRandomGeneralName() const;
-    QStringList getLimitedGeneralNames() const;
+    QStringList getLimitedGeneralNames(const char *kingdom = "") const;
 
     void playSystemAudioEffect(const char *name, bool continuePlayWhenPlaying = false) const;
     void playAudioEffect(const char *filename, bool continuePlayWhenPlaying = false) const;
@@ -1090,6 +1090,7 @@ public:
     QList<ServerPlayer *> getLieges(const char *kingdom, ServerPlayer *lord) const;
     void sendLog(const LogMessage &log, const QList<ServerPlayer *> &players = QList<ServerPlayer *>());
     void sendLog(const LogMessage &log, ServerPlayer *player);
+    void sendCompulsoryTriggerLog(ServerPlayer *player, const char *skill_name, bool notify_skill = true);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
     void retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, const char *skill_name, bool exchange = false);
@@ -1207,7 +1208,7 @@ public:
     void addPlayerHistory(ServerPlayer *player, const char *key, int times = 1);
 
     void broadcastInvoke(const char *method, const char *arg = ".", ServerPlayer *except = NULL);
-    bool doNotify(ServerPlayer *player, int command, const char *arg); 
+    bool doNotify(ServerPlayer *player, int command, const char *arg);
     bool doBroadcastNotify(int command, const char *arg);
     bool doBroadcastNotify(const QList<ServerPlayer *> &players, int command, const char *arg);
 

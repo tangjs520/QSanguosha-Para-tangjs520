@@ -13,7 +13,7 @@
 class TablePile: public GenericCardContainer {
     Q_OBJECT
 
-public:  
+public:
     inline TablePile(): GenericCardContainer(), m_currentTime(0) { m_timer = startTimer(S_CLEARANCE_UPDATE_INTERVAL_MSEC); }
     ~TablePile() { killTimer(m_timer); }
 

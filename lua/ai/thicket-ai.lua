@@ -612,7 +612,7 @@ sgs.ai_skill_use_func.DimengCard = function(card, use, self)
 		return x < y
 	end
 	table.sort(friends, cmp_HandcardNum)
-	
+
 	self:sort(self.enemies, "defense")
 	for _,enemy in ipairs(self.enemies) do
 		if enemy:hasSkill("manjuan") then
@@ -636,7 +636,7 @@ sgs.ai_skill_use_func.DimengCard = function(card, use, self)
 			end
 		end
 	end
-	
+
 	for _, enemy in ipairs(self.enemies) do
 		local e_hand = enemy:getHandcardNum()
 		for _, friend in ipairs(friends) do

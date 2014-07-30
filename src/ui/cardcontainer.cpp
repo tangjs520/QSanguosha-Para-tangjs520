@@ -83,8 +83,8 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
             } else {
                 pos = pos2;
                 pos.setX(pos.x() + (i - half) * real_skip);
-            }        
-        }      
+            }
+        }
         CardItem *item = items[i];
         item->setPos(pos);
         item->setHomePos(pos);

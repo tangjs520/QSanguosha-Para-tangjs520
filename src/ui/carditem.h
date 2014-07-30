@@ -55,7 +55,7 @@ public:
     inline void hideFootnote() { _m_showFootnote = false; }
 
     static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
-    
+
     struct UiHelper {
         int tablePileClearTimeStamp;
     } m_uiHelper;

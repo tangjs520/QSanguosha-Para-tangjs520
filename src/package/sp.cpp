@@ -137,46 +137,25 @@ public:
 class Danlao: public TriggerSkill {
 public:
     Danlao(): TriggerSkill("danlao") {
-        events << TargetConfirmed << CardEffected;
+        events << TargetConfirmed;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == TargetConfirmed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.to.length() <= 1 || !use.to.contains(player)
-                || !use.card->isKindOf("TrickCard")
-                || !room->askForSkillInvoke(player, objectName(), data))
-                return false;
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.to.length() <= 1 || !use.to.contains(player)
+            || !use.card->isKindOf("TrickCard")
+            || !room->askForSkillInvoke(player, objectName(), data))
+            return false;
 
-            room->broadcastSkillInvoke(objectName());
+        room->broadcastSkillInvoke(objectName());
+        player->setFlags("-DanlaoTarget");
+        player->setFlags("DanlaoTarget");
+        player->drawCards(1, objectName());
+        if (player->isAlive() && player->hasFlag("DanlaoTarget")) {
             player->setFlags("-DanlaoTarget");
-            player->setFlags("DanlaoTarget");
-            player->drawCards(1, objectName());
-            if (player->isAlive() && player->hasFlag("DanlaoTarget")) {
-                player->setFlags("-DanlaoTarget");
-                use.nullified_list << player->objectName();
-                data = QVariant::fromValue(use);
-            }
-        } else {
-            if (!player->isAlive() || !player->hasSkill(objectName()))
-                return false;
-
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (player->tag["Danlao"].isNull() || player->tag["Danlao"].toString() != effect.card->toString())
-                return false;
-
-            player->tag["Danlao"] = QVariant(QString());
-
-            LogMessage log;
-            log.type = "#DanlaoAvoid";
-            log.from = player;
-            log.arg = effect.card->objectName();
-            log.arg2 = objectName();
-            room->sendLog(log);
-
-            return true;
+            use.nullified_list << player->objectName();
+            data = QVariant::fromValue(use);
         }
-
         return false;
     }
 };
@@ -1011,12 +990,7 @@ public:
     virtual int getDrawNum(ServerPlayer *player, int n) const{
         Room *room = player->getRoom();
         room->broadcastSkillInvoke("shenwei");
-        room->notifySkillInvoked(player, "shenwei");
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = player;
-        log.arg = "shenwei";
-        room->sendLog(log);
+        room->sendCompulsoryTriggerLog(player, "shenwei");
 
         return n + 2;
     }
@@ -1758,12 +1732,7 @@ public:
         } else if (triggerEvent == Damaged && !player->getPile("yinbing").isEmpty()) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.card && (damage.card->isKindOf("Slash") || damage.card->isKindOf("Duel"))) {
-                room->notifySkillInvoked(player, objectName());
-                LogMessage log;
-                log.type = "#TriggerSkill";
-                log.from = player;
-                log.arg = objectName();
-                room->sendLog(log);
+                room->sendCompulsoryTriggerLog(player, objectName());
 
                 QList<int> ids = player->getPile("yinbing");
                 room->fillAG(ids, player);
@@ -1823,14 +1792,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.arg = objectName();
-        log.from = player;
-        room->sendLog(log);
-
         room->broadcastSkillInvoke(objectName());
-        room->notifySkillInvoked(player, objectName());
+        room->sendCompulsoryTriggerLog(player, objectName());
 
         LogMessage log2;
         log2.type = "#GainMaxHp";
@@ -1902,14 +1865,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.arg = objectName();
-        log.from = player;
-        room->sendLog(log);
-
         room->broadcastSkillInvoke(objectName());
-        room->notifySkillInvoked(player, objectName());
+        room->sendCompulsoryTriggerLog(player, objectName());
 
         player->drawCards(1, objectName());
         return false;
@@ -2258,7 +2215,6 @@ public:
         return false;
     }
 };
-
 
 SPCardPackage::SPCardPackage()
     : Package("sp_cards")

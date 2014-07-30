@@ -444,13 +444,7 @@ public:
         player->tag["InvokeKuanggu"] = false;
         if (invoke && player->isWounded()) {
             room->broadcastSkillInvoke(objectName());
-
-            LogMessage log;
-            log.type = "#TriggerSkill";
-            log.from = player;
-            log.arg = objectName();
-            room->sendLog(log);
-            room->notifySkillInvoked(player, objectName());
+            room->sendCompulsoryTriggerLog(player, objectName());
 
             room->recover(player, RecoverStruct(player, NULL, damage.damage));
         }
@@ -490,12 +484,7 @@ public:
 
         if (zhoutai->getHp() > 0) return false;
         room->broadcastSkillInvoke(objectName());
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = zhoutai;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(zhoutai, objectName());
+        room->sendCompulsoryTriggerLog(zhoutai, objectName());
 
         int id = room->drawCard();
         int num = Sanguosha->getCard(id)->getNumber();
@@ -976,14 +965,16 @@ const Card *GuhuoCard::validate(CardUseStruct &card_use) const{
         foreach (ServerPlayer *to, tos) {
             const ProhibitSkill *skill = room->isProhibited(card_use.from, to, use_card);
             if (skill) {
-                LogMessage log;
-                log.type = "#SkillAvoid";
-                log.from = to;
-                log.arg = skill->objectName();
-                log.arg2 = use_card->objectName();
-                room->sendLog(log);
+                if (skill->isVisible()) {
+                    LogMessage log;
+                    log.type = "#SkillAvoid";
+                    log.from = to;
+                    log.arg = skill->objectName();
+                    log.arg2 = use_card->objectName();
+                    room->sendLog(log);
 
-                room->broadcastSkillInvoke(skill->objectName());
+                    room->broadcastSkillInvoke(skill->objectName());
+                }
                 card_use.to.removeOne(to);
             }
         }

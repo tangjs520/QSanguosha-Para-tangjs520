@@ -140,7 +140,7 @@ bool TablePile::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
     m_visibleCards.append(card_items);
     int numAdded = card_items.length();
     int numRemoved = m_visibleCards.size() - qMax(m_numCardsVisible, numAdded + 1);
-    
+
     for (int i = 0; i < numRemoved; ++i) {
         CardItem *toRemove = m_visibleCards[i];
         _markClearance(toRemove);

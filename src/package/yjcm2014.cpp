@@ -321,8 +321,7 @@ public:
         Room *room = target->getRoom();
         foreach (ServerPlayer *hs, room->getOtherPlayers(target)) {
             if (target->isDead() || target->getJudgingArea().isEmpty()) break;
-            if (!TriggerSkill::triggerable(hs)) continue;
-            if (!hs->inMyAttackRange(target)) continue;
+            if (!TriggerSkill::triggerable(hs) || !hs->inMyAttackRange(target)) continue;
             if (room->askForSkillInvoke(hs, objectName())) {
                 room->broadcastSkillInvoke(objectName());
                 int id = room->askForCardChosen(hs, target, "j", objectName(), false, Card::MethodDiscard);
@@ -519,6 +518,7 @@ public:
                             const Card *to_give = room->askForExchange(p, objectName(), num, num, true,
                                                                        QString("@xiantu-give::%1:%2").arg(player->objectName()).arg(num));
                             player->obtainCard(to_give, false);
+                            delete to_give;
                         }
                     }
                 }
@@ -1052,15 +1052,10 @@ public:
     }
 
     virtual void onDamaged(ServerPlayer *player, const DamageStruct &) const{
-        Room *room = player->getRoom();  
+        Room *room = player->getRoom();
         if (player->getMark("shibei") > 0) {
-            LogMessage log;
-            log.type = "#TriggerSkill";
-            log.from = player;
-            log.arg = objectName();
-            room->sendLog(log);
-            room->notifySkillInvoked(player, objectName());
             room->broadcastSkillInvoke(objectName());
+            room->sendCompulsoryTriggerLog(player, objectName());
 
             if (player->getMark("shibei") == 1)
                 room->recover(player, RecoverStruct(player));

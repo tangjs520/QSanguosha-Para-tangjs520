@@ -201,14 +201,9 @@ public:
                     jink_list.replace(index, QVariant(2));
                 ++index;
             }
-            LogMessage log;
-            log.from = player;
-            log.arg = objectName();
-            log.type = "#TriggerSkill";
-            room->sendLog(log);
-            room->notifySkillInvoked(player, objectName());
 
             room->broadcastSkillInvoke("wushuang");
+            room->sendCompulsoryTriggerLog(player, objectName());
             player->tag["Jink_" + use.card->toString()] = QVariant::fromValue(jink_list);
         }
         return false;

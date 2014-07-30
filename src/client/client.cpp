@@ -459,7 +459,7 @@ void Client::getCards(const Json::Value &arg)
         move.from = getPlayer(move.from_player_name);
         move.to = getPlayer(move.to_player_name);
         Player::Place dstPlace = move.to_place;
-    
+
         if (dstPlace == Player::PlaceSpecial) {
             ((ClientPlayer *)move.to)->changePile(move.to_pile_name, true, move.card_ids);
         }

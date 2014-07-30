@@ -172,7 +172,7 @@ return {
 	["#JujianRecover"] = "%from 发动“<font color=\"yellow\"><b>举荐</b></font>”弃置了三张 %arg ，回复1点体力",
 
 	["nos_lingtong"] = "凌统-旧",
-	["&nos_lingtong"] = "凌统", 
+	["&nos_lingtong"] = "凌统",
 	["designer:nos_lingtong"] = "ShadowLee",
 	["illustrator:nos_lingtong"] = "绵Myan",
 	["nosxuanfeng"] = "旋风",
@@ -224,7 +224,7 @@ return {
 	["designer:nos_guanxingzhangbao"] = "诺思冥羽",
 	["illustrator:nos_guanxingzhangbao"] = "HOOO",
 	["nosfuhun"] = "父魂",
-	[":nosfuhun"] = "摸牌阶段开始时，你可以放弃摸牌，亮出牌堆顶的两张牌并获得之：若展示的牌不为同一颜色，你拥有“武圣”、“咆哮”，直到回合结束。",
+	[":nosfuhun"] = "摸牌阶段开始时，你可以放弃摸牌，亮出牌堆顶的两张牌并获得之：若亮出的牌不为同一颜色，你拥有“武圣”、“咆哮”，直到回合结束。",
 
 	["nos_caochong"] = "曹冲-旧",
 	["&nos_caochong"] = "曹冲",
@@ -296,7 +296,7 @@ return {
 	["#NosBaijiangWake"] = "%from 的装备区有 %arg 张装备牌，触发“%arg2”觉醒",
 
 	["nos_shencaocao"] = "神曹操-内测",
-	["&nos_shencaocao"] = "神曹操", 
+	["&nos_shencaocao"] = "神曹操",
 	["nosguixin"] = "归心",
 	[":nosguixin"] = "结束阶段开始时，你可以选择一项：1.改变一名其他角色的势力。 2.获得并可以发动一名已死亡或未上场角色的主公技。",
 	["nosguixin:modify"] = "改变一名其他角色的势力",

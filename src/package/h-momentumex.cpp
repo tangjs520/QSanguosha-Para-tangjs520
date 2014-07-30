@@ -55,7 +55,7 @@ const Card *WuxinCard::validate(CardUseStruct &cardUse) const{
             theslash->setSkillName("wuxin");
             theslash->addSubcard(id);
             theslash->deleteLater();
-            bool can_slash = theslash->isAvailable(cardUse.from) && 
+            bool can_slash = theslash->isAvailable(cardUse.from) &&
                 theslash->targetsFeasible(ServerPlayerList2PlayerList(cardUse.to), cardUse.from);
             if (can_slash)
                 black_skysoldier << id;
@@ -347,7 +347,7 @@ const Card *HongfaCard::validate(CardUseStruct &cardUse) const{
             theslash->setSkillName("hongfa");
             theslash->addSubcard(id);
             theslash->deleteLater();
-            bool can_slash = theslash->isAvailable(cardUse.from) && 
+            bool can_slash = theslash->isAvailable(cardUse.from) &&
                 theslash->targetsFeasible(WuxinCard::ServerPlayerList2PlayerList(cardUse.to), cardUse.from);
             if (can_slash)
                 black_skysoldier << id;

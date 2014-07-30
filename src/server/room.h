@@ -117,6 +117,7 @@ public:
 
     void sendLog(const LogMessage &log, const QList<ServerPlayer *> &players = QList<ServerPlayer *>());
     void sendLog(const LogMessage &log, ServerPlayer *player);
+    void sendCompulsoryTriggerLog(ServerPlayer *player, const QString &skill_name, bool notify_skill = true);
 
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
@@ -174,7 +175,7 @@ public:
     // Notify a player of a event by sending S_SERVER_NOTIFICATION packets. No reply should be expected from
     // the client for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
     // will be rejected.
-    bool doNotify(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg); 
+    bool doNotify(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg);
 
     // Broadcast a event to a list of players by sending S_SERVER_NOTIFICATION packets. No replies should be expected from
     // the clients for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
@@ -398,7 +399,7 @@ protected:
 private:
     struct _MoveSourceClassifier {
         inline _MoveSourceClassifier(const CardsMoveStruct &move) {
-            m_from = move.from; m_from_place = move.from_place; 
+            m_from = move.from; m_from_place = move.from_place;
             m_from_pile_name = move.from_pile_name; m_from_player_name = move.from_player_name;
         }
         inline void copyTo(CardsMoveStruct &move) {
@@ -507,9 +508,9 @@ private:
 
     QTime _m_timeSinceLastSurrenderRequest; // Timer used to ensure that surrender polls are not initiated too frequently
     bool _m_isFirstSurrenderRequest; // We allow the first surrender poll to go through regardless of the timer.
-    
+
     //helper variables for race request function
-    bool _m_raceStarted; 
+    bool _m_raceStarted;
     ServerPlayer *_m_raceWinner;
 
     QMap<int, Player::Place> place_map;
@@ -531,8 +532,10 @@ private:
     static QString generatePlayerName();
     void prepareForStart();
     void assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign);
+    void assignGeneralsForPlayersOfJianGeDefenseMode(const QList<ServerPlayer *> &to_assign);
 
     void chooseGenerals(const QList<ServerPlayer *> &playerList = QList<ServerPlayer *>());
+    void chooseGeneralsOfJianGeDefenseMode();
 
     AI *cloneAI(ServerPlayer *player);
     void broadcast(const QString &message, ServerPlayer *except = NULL);
