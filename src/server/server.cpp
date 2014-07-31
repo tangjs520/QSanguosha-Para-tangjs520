@@ -1423,11 +1423,13 @@ void Server::processNewConnection(ClientSocket *socket) {
     if (Config.ForbidSIMC) {
         QString addr = socket->peerAddress();
         if (addresses.contains(addr)) {
+            addresses.append(addr);
             socket->disconnectFromHost();
             emit server_message(tr("Forbid the connection of address %1").arg(addr));
             return;
-        } else
-            addresses.insert(addr);
+        } else {
+            addresses.append(addr);
+        }
     }
 
     QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_CHECK_VERSION);
@@ -1487,8 +1489,9 @@ void Server::processRequest(const QString &request) {
 void Server::cleanup() {
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
 
-    if (Config.ForbidSIMC)
-        addresses.remove(socket->peerAddress());
+    if (Config.ForbidSIMC) {
+        addresses.removeOne(socket->peerAddress());
+    }
 
     socket->deleteLater();
 }
