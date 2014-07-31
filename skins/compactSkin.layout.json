@@ -21,7 +21,7 @@
     "discardPileMinWidth": 465,
     "discardPilePadding": 50,
     "maximumSceneSize": [1180, 660], // if greater than this size, switch to default skin
-    "minimumSceneSize": [930, 550], // if smaller than this size, start scaling 
+    "minimumSceneSize": [930, 550], // if smaller than this size, start scaling
     "maximumSceneSize-10player": [1080, 810],
     "minimumSceneSize-10player": [1020, 670]
 },
@@ -62,7 +62,7 @@
     "screenNameArea": [0, 4, 131, 15],
     "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
     "magatamasHorizontal": true,
-    "magatamasArea": [0, 0, 14, 17], 
+    "magatamasArea": [0, 0, 14, 17],
     "magatamaSize": [14, 17],
     "magatamasBgVisible": true,
     "magatamasAnchor": ["bottomRight", [136, 85]],
