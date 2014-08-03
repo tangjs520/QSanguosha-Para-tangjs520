@@ -20,6 +20,7 @@ class ClientSocket;
 #include <QSplitter>
 #include <QTabWidget>
 #include <QMultiHash>
+#include <QMutex>
 
 class Package;
 
@@ -211,16 +212,17 @@ public:
 private:
     bool hasActiveRoom() const;
     void deleteSelf();
+    Room *getAvailableRoom() const;
 
 private:
     ServerSocket *server;
-    Room *current;
     QSet<Room *> rooms;
     QHash<QString, ServerPlayer *> players;
     QStringList addresses;
     QMultiHash<QString, QString> name2objname;
 
     bool m_requestDeleteSelf;
+    mutable QMutex m_mutex;
 
 private slots:
     void processNewConnection(ClientSocket *socket);

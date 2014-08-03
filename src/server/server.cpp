@@ -1362,8 +1362,7 @@ bool ServerDialog::config() {
 }
 
 Server::Server(QObject *parent, bool consoleStart)
-    : QObject(parent)
-    , current(NULL), m_requestDeleteSelf(false)
+    : QObject(parent), m_requestDeleteSelf(false)
 {
     server = new ServerSocket(this);
 
@@ -1386,8 +1385,11 @@ void Server::broadcast(const QString &msg) {
 
     QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
     packet.setMessageBody(arg);
-    foreach (Room *room, rooms)
+
+    QMutexLocker locker(&m_mutex);
+    foreach (Room *room, rooms) {
         room->broadcastInvoke(&packet);
+    }
 }
 
 bool Server::listen() {
@@ -1407,14 +1409,15 @@ Room *Server::createNewRoom() {
         delete new_room;
         return NULL;
     }
-    current = new_room;
-    rooms.insert(current);
 
-    connect(current, SIGNAL(room_message(const QString &)),
+    QMutexLocker locker(&m_mutex);
+    rooms.insert(new_room);
+
+    connect(new_room, SIGNAL(room_message(const QString &)),
         this, SIGNAL(server_message(const QString &)));
-    connect(current, SIGNAL(game_over()), this, SLOT(gameOver()));
+    connect(new_room, SIGNAL(game_over()), this, SLOT(gameOver()));
 
-    return current;
+    return new_room;
 }
 
 void Server::processNewConnection(ClientSocket *socket) {
@@ -1461,9 +1464,7 @@ void Server::processRequest(const QString &request) {
 
     const Json::Value &body = signup.getMessageBody();
     bool reconnection_enabled = body[0].asBool();
-
     QString screen_name = Settings::fromBase64(toQString(body[1]));
-    QString avatar = toQString(body[2]);
 
     if (reconnection_enabled) {
         QStringList objNames = name2objname.values(screen_name);
@@ -1476,14 +1477,17 @@ void Server::processRequest(const QString &request) {
         }
     }
 
-    if (current == NULL || current->isFull() || current->isFinished()) {
-        if (NULL == createNewRoom()) {
+    Room *room = getAvailableRoom();
+    if (NULL == room) {
+        room = createNewRoom();
+        if (NULL == room) {
             return;
         }
     }
 
-    ServerPlayer *player = current->addSocket(socket);
-    current->signup(player, screen_name, avatar, false);
+    ServerPlayer *player = room->addSocket(socket);
+    QString avatar = toQString(body[2]);
+    room->signup(player, screen_name, avatar, false);
 }
 
 void Server::cleanup() {
@@ -1502,6 +1506,7 @@ void Server::signupPlayer(ServerPlayer *player) {
 }
 
 void Server::gameOver() {
+    QMutexLocker locker(&m_mutex);
     if (rooms.isEmpty()) {
         return;
     }
@@ -1516,9 +1521,6 @@ void Server::gameOver() {
     }
 
     room->deleteLater();
-    if (room == current) {
-        current = NULL;
-    }
 
     if (m_requestDeleteSelf) {
         deleteSelf();
@@ -1527,6 +1529,7 @@ void Server::gameOver() {
 
 void Server::requestDeleteSelf()
 {
+    QMutexLocker locker(&m_mutex);
     m_requestDeleteSelf = true;
     deleteSelf();
 }
@@ -1558,5 +1561,26 @@ void Server::deleteSelf()
 {
     if (rooms.isEmpty() || !hasActiveRoom()) {
         deleteLater();
+    }
+}
+
+Room *Server::getAvailableRoom() const
+{
+    QMap<int, Room*> availRooms;
+
+    QMutexLocker locker(&m_mutex);
+    foreach (Room *room, rooms) {
+        int vacancies = 0;
+        if (!room->isFull(&vacancies) && !room->isFinished()) {
+            availRooms.insertMulti(vacancies, room);
+        }
+    }
+
+    QMap<int, Room*>::iterator i = availRooms.begin();
+    if (i != availRooms.end()) {
+        return i.value();
+    }
+    else {
+        return NULL;
     }
 }

@@ -1755,7 +1755,12 @@ ServerPlayer *Room::addSocket(ClientSocket *socket) {
     return player;
 }
 
-bool Room::isFull() const{
+bool Room::isFull(int *vacancies/* = NULL*/) const
+{
+    if (vacancies) {
+        *vacancies = player_count - m_players.length();
+        return *vacancies == 0;
+    }
     return m_players.length() == player_count;
 }
 

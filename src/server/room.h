@@ -39,7 +39,7 @@ public:
 
     ServerPlayer *addSocket(ClientSocket *socket);
     inline int getId() const { return _m_Id; }
-    bool isFull() const;
+    bool isFull(int *vacancies = NULL) const;
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
     bool isPaused() const;
