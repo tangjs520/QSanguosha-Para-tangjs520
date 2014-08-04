@@ -530,6 +530,7 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (player->getHp() > 0 && move.from && move.from->isAlive() && move.from_places.contains(Player::PlaceHand)
             && move.reason.m_reason != CardMoveReason::S_REASON_RULEDISCARD
+            && move.reason.m_reason != CardMoveReason::S_REASON_THROW
             && ((move.reason.m_reason == CardMoveReason::S_REASON_DISMANTLE
                  && move.reason.m_playerId != move.reason.m_targetId)
                 || (move.to && move.to != move.from && move.to_place == Player::PlaceHand
