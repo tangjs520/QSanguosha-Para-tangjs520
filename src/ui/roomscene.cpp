@@ -1956,14 +1956,16 @@ bool RoomScene::_processCardsMove(CardsMoveStruct &move, bool isLost) {
 }
 
 void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves) {
-    for (int i = 0; i < card_moves.size(); ++i) {
+    for (int i = 0, j = 0; i < card_moves.size(); ++i, ++j) {
         CardsMoveStruct &movement = card_moves[i];
         bool skipMove = _processCardsMove(movement, false);
-        if (skipMove) continue;
-        if (_shouldIgnoreDisplayMove(movement)) continue;
+        if (skipMove || _shouldIgnoreDisplayMove(movement)) {
+            --j;
+            continue;
+        }
         card_container->m_currentPlayer = (ClientPlayer *)movement.to;
         GenericCardContainer *to_container = _getGenericCardContainer(movement.to_place, movement.to);
-        QList<CardItem *> cards = _m_cardsMoveStash[moveId].value(i);
+        QList<CardItem *> cards = _m_cardsMoveStash[moveId].value(j);
         for (int j = 0; j < cards.size(); ++j) {
             CardItem *card = cards[j];
             card->setFlag(QGraphicsItem::ItemIsMovable, false);
