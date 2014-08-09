@@ -58,8 +58,8 @@ RolesBoxItem::RolesBoxItem()
     }
 }
 
-RoomScene::RoomScene(QMainWindow *main_window)
-    : main_window(main_window), game_started(false),
+RoomScene::RoomScene(QMainWindow *mainWindow)
+    : main_window(mainWindow), game_started(false),
     pindian_success(false), _m_currentStage(0)
 {
     setParent(main_window);
@@ -3676,9 +3676,17 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart, QList<i
         card_container->addCloseButton();
 }
 
-void RoomScene::showOwnerButtons(bool owner) {
-    if (control_panel && !game_started)
-        control_panel->setVisible(owner);
+void RoomScene::showOwnerButtons(bool owner)
+{
+    if (control_panel && !game_started) {
+        MainWindow *mainWnd = qobject_cast<MainWindow *>(main_window);
+        if (NULL != mainWnd && !mainWnd->isConsoleStart()) {
+            control_panel->hide();
+        }
+        else {
+            control_panel->setVisible(owner);
+        }
+    }
 }
 
 void RoomScene::showPlayerCards() {

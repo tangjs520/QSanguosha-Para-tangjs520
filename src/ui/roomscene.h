@@ -126,7 +126,7 @@ class RoomScene : public SanScene {
     Q_OBJECT
 
 public:
-    explicit RoomScene(QMainWindow *main_window);
+    explicit RoomScene(QMainWindow *mainWindow);
 
     ~RoomScene() {
         delete log_box;
