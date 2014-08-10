@@ -691,7 +691,7 @@
       <string>seconds, auto close card container that need close manually</string>
      </property>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>11</x>
@@ -723,10 +723,10 @@
          </sizepolicy>
         </property>
         <property name="minimum">
-         <number>1</number>
+         <number>0</number>
         </property>
         <property name="maximum">
-         <number>3</number>
+         <number>5</number>
         </property>
        </widget>
       </item>

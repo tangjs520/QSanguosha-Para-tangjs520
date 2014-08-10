@@ -4892,14 +4892,16 @@ bool RoomScene::isReturnMainMenuButtonVisible() const
 
 void RoomScene::showBubbleChatBox(const QString &who, const QString &line)
 {
-    if (!m_bubbleChatBoxs.contains(who)) {
-        BubbleChatBox *bubbleChatBox = new BubbleChatBox(getBubbleChatBoxShowArea(who));
-        addItem(bubbleChatBox);
-        bubbleChatBox->setZValue(INT_MAX);
-        m_bubbleChatBoxs.insert(who, bubbleChatBox);
-    }
+    if (Config.BubbleChatBoxDelaySeconds > 0) {
+        if (!m_bubbleChatBoxs.contains(who)) {
+            BubbleChatBox *bubbleChatBox = new BubbleChatBox(getBubbleChatBoxShowArea(who));
+            addItem(bubbleChatBox);
+            bubbleChatBox->setZValue(INT_MAX);
+            m_bubbleChatBoxs.insert(who, bubbleChatBox);
+        }
 
-    m_bubbleChatBoxs[who]->setText(line);
+        m_bubbleChatBoxs[who]->setText(line);
+    }
 }
 
 const QSize BUBBLE_CHAT_BOX_SHOW_AREA_SIZE(138, 64);
