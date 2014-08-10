@@ -5,6 +5,7 @@
 #include <QTimer>
 
 class BubbleChatLabel;
+class QPropertyAnimation;
 
 class BubbleChatBox : public QGraphicsObject
 {
@@ -32,6 +33,7 @@ private:
     QRect m_area;
     QTimer m_timer;
     BubbleChatLabel *m_chatLabel;
+    QPropertyAnimation *m_appearAndDisappear;
 
 private slots:
     void clear();

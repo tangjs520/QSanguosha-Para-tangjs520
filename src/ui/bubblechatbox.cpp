@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QTextDocument>
 #include <QBitmap>
+#include <QPropertyAnimation>
 
 const int PIXELS_PER_LINE = 168;
 const int BOX_MIN_WIDTH = 42;
@@ -13,6 +14,7 @@ const int CHAT_FACE_WIDTH = 16;
 const int BOX_LEFT_FRAME_WIDTH = 6;
 const int BOX_RIGHT_FRAME_WIDTH = 10;
 const int BOX_FRAME_HEIGHT = 28;
+const int ANIMATION_DURATION = 500;
 
 class BubbleChatLabel : public QGraphicsTextItem
 {
@@ -44,16 +46,20 @@ private:
 
 BubbleChatBox::BubbleChatBox(const QRect &area, QGraphicsItem *parent/* = 0*/)
     : QGraphicsObject(parent), m_backgroundPixmap("image/system/bubble.png"),
-    m_rect(m_backgroundPixmap.rect()), m_area(area), m_chatLabel(NULL)
+    m_rect(m_backgroundPixmap.rect()), m_area(area), m_chatLabel(new BubbleChatLabel(this)),
+    m_appearAndDisappear(new QPropertyAnimation(this, "opacity", this))
 {
-    m_chatLabel = new BubbleChatLabel(this);
-    m_chatLabel->setFont(QFont("SimSun", 9));
+    m_chatLabel->setFont(Config.UIFont);
     m_chatLabel->setWrapMode(QTextOption::WrapAnywhere);
 
     setFlag(ItemClipsChildrenToShape);
-    hide();
+    setOpacity(0);
 
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(clear()));
+
+    m_appearAndDisappear->setStartValue(0);
+    m_appearAndDisappear->setEndValue(1);
+    m_appearAndDisappear->setDuration(ANIMATION_DURATION);
 }
 
 BubbleChatBox::~BubbleChatBox()
@@ -126,8 +132,9 @@ void BubbleChatBox::setText(const QString &text)
 
     updatePos();
 
-    if (!isVisible()) {
-        show();
+    if (opacity() != 1) {
+        m_appearAndDisappear->setDirection(QAbstractAnimation::Forward);
+        m_appearAndDisappear->start();
     }
 
     if (m_oldRect.width() > m_rect.width()) {
@@ -159,7 +166,9 @@ QVariant BubbleChatBox::itemChange(GraphicsItemChange change, const QVariant &va
 void BubbleChatBox::clear()
 {
     m_timer.stop();
-    hide();
+
+    m_appearAndDisappear->setDirection(QAbstractAnimation::Backward);
+    m_appearAndDisappear->start();
 }
 
 void BubbleChatBox::updatePos()
