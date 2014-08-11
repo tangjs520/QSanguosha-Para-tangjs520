@@ -2263,6 +2263,10 @@ void Room::processClientPacket(const QString &request) {
 }
 
 bool Room::addRobotCommand(ServerPlayer *player, const Json::Value &) {
+    if (Config.HostAddress != "127.0.0.1") {
+        return false;
+    }
+
     if (player && !player->isOwner()) return false;
     if (isFull()) return false;
 
@@ -2314,6 +2318,10 @@ bool Room::addRobotCommand(ServerPlayer *player, const Json::Value &) {
 }
 
 bool Room::fillRobotsCommand(ServerPlayer *player, const Json::Value &) {
+    if (Config.HostAddress != "127.0.0.1") {
+        return false;
+    }
+
     int left = player_count - m_players.length();
     for (int i = 0; i < left; ++i)
         addRobotCommand(player, Json::Value::null);
