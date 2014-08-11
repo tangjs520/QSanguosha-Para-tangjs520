@@ -18,6 +18,7 @@ struct LogMessage;
 #include "RoomState.h"
 #include <qmutex.h>
 #include <QStack>
+#include <QWaitCondition>
 
 class Room : public QThread {
     Q_OBJECT
@@ -42,7 +43,7 @@ public:
     bool isFull(int *vacancies = NULL) const;
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
-    bool isPaused() const;
+    void tryPause();
     int getLack() const;
     QString getMode() const;
     const Scenario *getScenario() const;
@@ -528,6 +529,9 @@ private:
 
     Json::Value m_fillAGArg;
     QList<Json::Value> m_takeAGArgs;
+
+    QWaitCondition m_waitCond;
+    mutable QMutex m_mutex;
 
     static QString generatePlayerName();
     void prepareForStart();

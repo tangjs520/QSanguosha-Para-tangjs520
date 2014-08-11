@@ -632,7 +632,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                 triggered.append(skill);
                 current_priority = skill->getPriority(triggerEvent);
                 if (skill->triggerable(target)) {
-                    while (room->isPaused()) {}
+                    room->tryPause();
                     broken = skill->trigger(triggerEvent, room, target, data);
                     if (broken) break;
                     i = 0;
@@ -660,7 +660,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
         throw throwed_event;
     }
 
-    while (room->isPaused()) {}
+    room->tryPause();
     return broken;
 }
 

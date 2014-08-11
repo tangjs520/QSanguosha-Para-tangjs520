@@ -113,7 +113,7 @@ void RoomThread1v1::run() {
 }
 
 void RoomThread1v1::askForTakeGeneral(ServerPlayer *player) {
-    while (room->isPaused()) {}
+    room->tryPause();
     room->notifyMoveFocus(player, S_COMMAND_ASK_GENERAL);
 
     QString name;
@@ -172,7 +172,7 @@ void RoomThread1v1::takeGeneral(ServerPlayer *player, const QString &name) {
 }
 
 void RoomThread1v1::startArrange(QList<ServerPlayer *> players) {
-    while (room->isPaused()) {}
+    room->tryPause();
     QList<ServerPlayer *> online = players;
     foreach (ServerPlayer *player, players) {
         if (!player->isOnline()) {
@@ -202,7 +202,7 @@ void RoomThread1v1::startArrange(QList<ServerPlayer *> players) {
 }
 
 void RoomThread1v1::askForFirstGeneral(QList<ServerPlayer *> players) {
-    while (room->isPaused()) {}
+    room->tryPause();
     QList<ServerPlayer *> online = players;
     foreach (ServerPlayer *player, players) {
         if (!player->isOnline()) {
