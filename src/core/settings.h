@@ -86,6 +86,7 @@ public:
     bool EnableAutoTarget;
     bool EnableIntellectualSelection;
     bool EnableDoubleClick;
+    bool EnableSuperDrag;
 
     int AutoCloseCardContainerDelaySeconds;
     bool RandomPlayBGM;

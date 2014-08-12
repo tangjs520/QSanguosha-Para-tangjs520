@@ -656,7 +656,7 @@
      <property name="geometry">
       <rect>
        <x>11</x>
-       <y>91</y>
+       <y>115</y>
        <width>30</width>
        <height>16</height>
       </rect>
@@ -669,7 +669,7 @@
      <property name="geometry">
       <rect>
        <x>47</x>
-       <y>91</y>
+       <y>115</y>
        <width>36</width>
        <height>20</height>
       </rect>
@@ -682,7 +682,7 @@
      <property name="geometry">
       <rect>
        <x>95</x>
-       <y>91</y>
+       <y>115</y>
        <width>360</width>
        <height>16</height>
       </rect>
@@ -695,7 +695,7 @@
      <property name="geometry">
       <rect>
        <x>11</x>
-       <y>115</y>
+       <y>140</y>
        <width>161</width>
        <height>22</height>
       </rect>
@@ -731,6 +731,25 @@
        </widget>
       </item>
      </layout>
+    </widget>
+    <widget class="QCheckBox" name="superDragCheckBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>241</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Enable super-drag</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
     </widget>
    </widget>
   </widget>

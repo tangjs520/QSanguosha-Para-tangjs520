@@ -49,6 +49,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->autoTargetCheckBox->setChecked(Config.EnableAutoTarget);
     ui->intellectualSelectionCheckBox->setChecked(Config.EnableIntellectualSelection);
     ui->doubleClickCheckBox->setChecked(Config.EnableDoubleClick);
+    ui->superDragCheckBox->setChecked(Config.EnableSuperDrag);
     ui->secondsSpinBox->setValue(Config.AutoCloseCardContainerDelaySeconds);
     ui->bubbleChatBoxDelaySpinBox->setValue(Config.BubbleChatBoxDelaySeconds);
 
@@ -184,6 +185,9 @@ void ConfigDialog::saveConfig() {
 
     Config.EnableDoubleClick = ui->doubleClickCheckBox->isChecked();
     Config.setValue("EnableDoubleClick", Config.EnableDoubleClick);
+
+    Config.EnableSuperDrag = ui->superDragCheckBox->isChecked();
+    Config.setValue("EnableSuperDrag", Config.EnableSuperDrag);
 
     Config.AutoCloseCardContainerDelaySeconds = ui->secondsSpinBox->value();
     Config.setValue("AutoCloseCardContainerDelaySeconds", Config.AutoCloseCardContainerDelaySeconds);
