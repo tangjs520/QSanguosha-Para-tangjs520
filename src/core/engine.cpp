@@ -411,6 +411,9 @@ int Engine::getGeneralCount(bool include_banned/* = false*/, const QString &king
         if (!kingdom.isEmpty() && general->getKingdom() != kingdom) {
             continue;
         }
+        if (isGeneralHidden(general->objectName())) {
+            continue;
+        }
 
         if (getBanPackages().contains(general->getPackage())) {
             isBanned = true;

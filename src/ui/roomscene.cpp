@@ -2012,8 +2012,12 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves) {
 }
 
 QString RoomScene::_translateMovement(const CardsMoveStruct &move) {
+    if (move.reason.m_reason == CardMoveReason::S_REASON_UNKNOWN
+        || move.reason.m_reason == CardMoveReason::S_REASON_DRAW) {
+        return QString();
+    }
+
     CardMoveReason reason = move.reason;
-    if (reason.m_reason == CardMoveReason::S_REASON_UNKNOWN) return QString();
     // ============================================
     if (move.from && move.card_ids.length() == 1 && move.to_place == Player::DrawPile
         && move.from->property("zongxuan_move").toString() == QString::number(move.card_ids.first()))
