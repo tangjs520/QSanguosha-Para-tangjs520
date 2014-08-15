@@ -3,6 +3,7 @@
 #include "standard.h"
 #include "engine.h"
 #include "client.h"
+#include "SkinBank.h"
 
 #include <QCommandLinkButton>
 #include <QVBoxLayout>

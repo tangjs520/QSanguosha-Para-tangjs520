@@ -1149,18 +1149,18 @@ void Dashboard::onCardItemLeaveHover() {
 
 void Dashboard::onMarkChanged() {
     CardItem *card_item = qobject_cast<CardItem *>(sender());
-
-    Q_ASSERT(card_item->isEquipped());
-
     if (card_item) {
         if (card_item->isMarked()) {
             if (!pendings.contains(card_item)) {
-                if (view_as_skill && view_as_skill->inherits("OneCardViewAsSkill"))
+                if (view_as_skill && view_as_skill->inherits("OneCardViewAsSkill")) {
                     unselectAll(card_item);
+                }
                 pendings.append(card_item);
             }
-        } else
+        }
+        else {
             pendings.removeOne(card_item);
+        }
 
         updatePending();
     }

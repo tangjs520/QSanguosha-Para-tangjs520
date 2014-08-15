@@ -1,104 +1,103 @@
 #ifndef _CARD_ITEM_H
 #define _CARD_ITEM_H
 
-#include "card.h"
 #include "QSanSelectableItem.h"
-#include "settings.h"
-#include <QAbstractAnimation>
-#include <QMutex>
-#include <QSize>
-#include "SkinBank.h"
 
-class FilterSkill;
+#include <QMutex>
+
+class SanShadowTextFont;
+class QAbstractAnimation;
+class Card;
 class General;
 
-class CardItem: public QSanSelectableItem {
+class CardItem : public QSanSelectableItem
+{
     Q_OBJECT
 
 public:
-    CardItem(const Card *card);
-    CardItem(const QString &general_name);
+    explicit CardItem(const Card *card);
+    explicit CardItem(const QString &generalName);
     ~CardItem();
 
     virtual QRectF boundingRect() const;
 
     const Card *getCard() const;
     void setCard(const Card *card);
-    inline int getId() const{ return m_cardId; }
+    int getId() const { return m_cardId; }
 
     // For move card animation
-    void setHomePos(QPointF home_pos);
-    QPointF homePos() const;
+    void setHomePos(const QPointF &homePosition) { m_homePos = homePosition; }
+    QPointF homePos() const { return m_homePos; }
+
     QAbstractAnimation *getGoBackAnimation(bool doFadeEffect, bool smoothTransition = false,
-                                           int duration = Config.S_MOVE_CARD_ANIMATION_DURATION);
+                                           int duration = S_MOVE_CARD_ANIMATION_DURATION);
     void goBack(bool playAnimation, bool doFade = true);
 
-    inline void setHomeOpacity(double opacity) { m_opacityAtHome = opacity; }
-    inline double getHomeOpacity() { return m_opacityAtHome; }
+    void setHomeOpacity(double opacity) { m_opacityAtHome = opacity; }
 
     void showAvatar(const General *general);
-    void hideAvatar();
-    void setAutoBack(bool auto_back);
-    void changeGeneral(const QString &general_name);
+    void setAutoBack(bool autoBack) { m_autoBack = autoBack; }
+    void changeGeneral(const QString &generalName);
     void setFootnote(const QString &desc);
 
     //在卡牌选择框通过双击卡牌选择时显示的脚注
     void setDoubleClickedFootnote(const QString &desc);
 
-    inline bool isSelected() const{ return m_isSelected; }
-    inline void setSelected(bool selected) { m_isSelected = selected; }
-    bool isEquipped() const;
+    bool isSelected() const { return m_isSelected; }
+    void setSelected(bool selected) { m_isSelected = selected; }
 
-    void setFrozen(bool is_frozen);
-
-    inline void showFootnote() { _m_showFootnote = true; }
-    inline void hideFootnote() { _m_showFootnote = false; }
+    void showFootnote() { m_showFootnote = true; }
+    void hideFootnote() { m_showFootnote = false; }
 
     static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
 
     struct UiHelper {
         int tablePileClearTimeStamp;
+        UiHelper() : tablePileClearTimeStamp(0) {}
     } m_uiHelper;
 
     void clickItem() {
-        _m_mouse_doubleclicked = false;
+        m_mouseDoubleclicked = false;
         emit released();
     }
 
 protected:
-    void _initialize();
+    void initialize();
 
-    QAbstractAnimation *m_currentAnimation;
-    QImage _m_footnoteImage;
-    bool _m_showFootnote;
-    QMutex m_animationMutex;
-    double m_opacityAtHome;
-    bool m_isSelected;
-    bool _m_isUnknownGeneral;
-
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *);
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *);
 
 private slots:
-    void _animationFinished();
+    void animationFinished();
 
 private:
-    void paintFootnote(const SanShadowTextFont &FootnoteFont, const QString &desc);
-    void _stopAnimation();
+    void paintFootnoteImage(const SanShadowTextFont &footnoteFont, const QString &desc);
+    void stopAnimation();
 
 private:
+    QAbstractAnimation *m_currentAnimation;
+
+    bool m_showFootnote;
+    QMutex m_animationMutex;
+    double m_opacityAtHome;
+    bool m_isSelected;
     int m_cardId;
-    QString _m_avatarName;
-    QPointF home_pos;
-    QPointF _m_lastMousePressScenePos;
-    bool auto_back, frozen;
-    bool _m_mouse_doubleclicked;
+    QString m_avatarName;
+    QPointF m_homePos;
+    bool m_autoBack;
+    bool m_mouseDoubleclicked;
+
+    QPixmap m_backgroundPixmap;
+    QPixmap m_canvas;
+    QImage m_footnoteImage;
+
+    static const int S_MOVE_CARD_ANIMATION_DURATION = 600;
 
 signals:
     void double_clicked();

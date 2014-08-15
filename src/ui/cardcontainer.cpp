@@ -145,11 +145,6 @@ void CardContainer::clear() {
     m_delayClose = false;
 }
 
-void CardContainer::freezeCards(bool is_frozen) {
-    foreach (CardItem *item, items)
-        item->setFrozen(is_frozen);
-}
-
 QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Player::Place) {
     QList<CardItem *> result;
     foreach (int card_id, card_ids) {
