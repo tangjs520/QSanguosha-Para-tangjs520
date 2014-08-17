@@ -62,7 +62,6 @@ MainWindow::MainWindow(QWidget *parent)
     m_menuBarVisible = true;
     m_server = NULL;
     m_client = NULL;
-    m_consoleStart = true;
     m_generalOverview = NULL;
     m_cardOverview = NULL;
 
@@ -71,8 +70,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
-
-    connect(connection_dialog, SIGNAL(accepted()), this, SLOT(setConsoleStartFalse()));
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
 
     config_dialog = new ConfigDialog(this);
@@ -81,21 +78,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-    connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
 
     StartScene *start_scene = new StartScene;
 
     QList<QAction *> actions;
     actions << ui->actionStart_Server
             << ui->actionStart_Game
-            << ui->actionPC_Console_Start
             << ui->actionReplay
             << ui->actionConfigure
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
             << ui->actionScenario_Overview
-            << ui->actionAbout
-            << ui->actionAcknowledgement;
+            << ui->actionAbout;
 
     foreach (QAction *action, actions)
         start_scene->addButton(action);
@@ -250,7 +244,6 @@ void MainWindow::on_actionStart_Server_triggered() {
     connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
 
     ui->actionStart_Server->setEnabled(false);
-    ui->actionPC_Console_Start->setEnabled(false);
     ui->actionReplay->setEnabled(false);
 
     StartScene *start_scene = qobject_cast<StartScene *>(scene);
@@ -294,11 +287,6 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
 }
 
 void MainWindow::startConnection() {
-    if (NULL == m_server && m_consoleStart) {
-        on_actionPC_Console_Start_triggered();
-        return;
-    }
-
     Audio::resetCustomBackgroundMusicFileName();
 
     deleteClient();
@@ -398,8 +386,6 @@ void MainWindow::enterRoom() {
 
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
-
-    ui->actionPC_Console_Start->setEnabled(false);
     ui->actionReplay->setEnabled(false);
 
     RoomScene *room_scene = new RoomScene(this);
@@ -434,7 +420,6 @@ void MainWindow::enterRoom() {
         ui->actionDeath_note->disconnect();
         ui->actionDamage_maker->disconnect();
         ui->actionRevive_wand->disconnect();
-        ui->actionSend_lowlevel_command->disconnect();
         ui->actionExecute_script_at_server_side->disconnect();
     }
 
@@ -449,7 +434,6 @@ void MainWindow::gotoStartScene() {
     delete systray;
     systray = NULL;
 
-    m_consoleStart = true;
     deleteClient();
     RoomSceneInstance = NULL;
 
@@ -463,19 +447,16 @@ void MainWindow::gotoStartScene() {
     QList<QAction *> actions;
     actions << ui->actionStart_Server
             << ui->actionStart_Game
-            << ui->actionPC_Console_Start
             << ui->actionReplay
             << ui->actionConfigure
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
             << ui->actionScenario_Overview
-            << ui->actionAbout
-            << ui->actionAcknowledgement;
+            << ui->actionAbout;
 
     ui->actionStart_Game->setEnabled(true);
     ui->actionStart_Server->setEnabled(true);
     ui->actionReplay->setEnabled(true);
-    ui->actionPC_Console_Start->setEnabled(true);
 
     foreach (QAction *action, actions)
         start_scene->addButton(action);
@@ -486,7 +467,6 @@ void MainWindow::gotoStartScene() {
     ui->actionDeath_note->disconnect();
     ui->actionDamage_maker->disconnect();
     ui->actionRevive_wand->disconnect();
-    ui->actionSend_lowlevel_command->disconnect();
     ui->actionExecute_script_at_server_side->disconnect();
     gotoScene(start_scene);
 
@@ -809,50 +789,6 @@ void MainWindow::on_actionAcknowledgement_triggered() {
     window->appear();
 }
 
-void MainWindow::on_actionPC_Console_Start_triggered() {
-    if (m_client && !m_client->m_isGameOver) {
-        return;
-    }
-
-    ServerDialog *dialog = new ServerDialog(this, tr("PC Console Start"));
-    dialog->ensureEnableAI();
-
-    if (!dialog->config()) {
-        //战局重放结束后，如果用户选择了“重新开始”，然后在弹出的“单机游戏”对话框中点击了“取消”按钮，
-        //需要直接返回到主菜单界面，否则程序将处于“假死”状态，不能进行任何游戏了。
-        if (m_client && m_client->isReplayState()) {
-            gotoStartScene();
-        }
-        return;
-    }
-
-    Config.HostAddress = "127.0.0.1";
-    //单机启动时端口号可以使用随机数
-    Config.ServerPort = qrand() % 9999 + 10000;
-
-    Server *server = new Server(this);
-
-    //因为使用的端口号是随机值，所以有可能出现端口号已经被其他应用程序占用的情况，
-    //因此需要不断地尝试使用不同的端口号(尝试次数暂定为最多100次)
-    int attemptCount = 0;
-    while (!server->listen()) {
-        if (++attemptCount > 100) {
-            QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
-            server->deleteLater();
-            return;
-        }
-        Config.ServerPort = qrand() % 9999 + 10000;
-        BackgroundRunner::msleep(1);
-    }
-
-    m_server = server;
-    m_consoleStart = true;
-
-    server->createNewRoom();
-
-    startConnection();
-}
-
 #include <QGroupBox>
 #include <QToolButton>
 #include <QCommandLinkButton>
@@ -1094,11 +1030,6 @@ QGraphicsItem *const MainWindow::_isExistItem(const QString &title) const
     }
 
     return NULL;
-}
-
-void MainWindow::setConsoleStartFalse()
-{
-    m_consoleStart = false;
 }
 
 void MainWindow::backgroundLoadResources()

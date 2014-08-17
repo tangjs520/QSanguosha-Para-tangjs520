@@ -150,18 +150,18 @@ void StartScene::adjustItems()
 
     QRectF logoPixmapRect = logo->boundingRect();
     logo->setPos(startSceneRect.width() / 2 - logoPixmapRect.width() * 0.5,
-        startSceneRect.height() / 2 - logoPixmapRect.height() * 1.225);
+        startSceneRect.height() / 2 - logoPixmapRect.height() * 1.05);
 
     for (int i = 0, n = buttons.length(); i < n; ++i) {
         Button *const &button = buttons.at(i);
         QRectF btnRect = button->boundingRect();
-        if (i < 5) {
+        if (i < 4) {
             button->setPos(startSceneRect.width() / 2 - btnRect.width() - 7,
-                (i - 1) * (btnRect.height() * 1.2) + startSceneRect.height() / 2);
+                (i - 1) * (btnRect.height() * 1.2) + startSceneRect.height() / 2 + 40);
         }
         else {
             button->setPos(startSceneRect.width() / 2 + 7,
-                (i - 6) * (btnRect.height() * 1.2) + startSceneRect.height() / 2);
+                (i - 5) * (btnRect.height() * 1.2) + startSceneRect.height() / 2 + 40);
         }
     }
 
