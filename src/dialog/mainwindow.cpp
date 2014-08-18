@@ -273,7 +273,7 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
 
     client->disconnectFromHost();
 
-    static QString link = "http://pan.baidu.com/share/link?shareid=396750&uk=1442992357";
+    static QString link = "http://pan.baidu.com/s/1hq23yfy";
     QString text = tr("Server version is %1, client version is %2 <br/>").arg(server_version).arg(client_version);
     if (server_version > client_version)
         text.append(tr("Your client version is older than the server's, please update it <br/>"));
@@ -561,7 +561,7 @@ void MainWindow::on_actionAbout_triggered() {
         .arg(compileDate.toString(Qt::ISODate))
         .arg(time));
 
-    QString project_url = "https://github.com/Paracel/QSanguosha-Para";
+    QString project_url = "https://github.com/tangjs520/QSanguosha-Para-tangjs520";
     content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
     QString forum_url = "http://qsanguosha.org";
