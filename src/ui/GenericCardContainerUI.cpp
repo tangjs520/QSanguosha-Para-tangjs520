@@ -1153,6 +1153,12 @@ QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVaria
 void PlayerCardContainer::_onEquipSelectChanged() {
 }
 
+bool PlayerCardContainer::canBeSelected()
+{
+    QGraphicsItem *item1 = getMouseClickReceiver();
+    return item1 && isEnabled() && (flags() & QGraphicsItem::ItemIsSelectable);
+}
+
 void PlayerCardContainer::showSkillName(const QString &skill_name) {
     getSkillNameFont().paintText(_m_skillNameItem,
         getSkillNameArea(),

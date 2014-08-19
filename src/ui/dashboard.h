@@ -71,7 +71,7 @@ public:
 
     void adjustCards(bool playAnimation = true);
 
-    virtual QGraphicsItem *getMouseClickReceiver();
+    virtual QGraphicsItem *getMouseClickReceiver() { return _m_rightFrame; }
 
     QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place);
     virtual QList<CardItem *> cloneCardItems(QList<int> card_ids);
@@ -80,6 +80,12 @@ public:
     void startPending(const ViewAsSkill *skill);
     void stopPending();
     void updatePending();
+    void clearPendings();
+
+    void addPending(CardItem *item) { pendings << item; }
+    const QList<CardItem *> &getPendings() const { return pendings; }
+    bool hasHandCard(CardItem *item) const { return m_handCards.contains(item); }
+
     const ViewAsSkill *currentSkill() const;
     const Card *pendingCard() const;
 

@@ -83,10 +83,6 @@ void Dashboard::showProgressBar(const Countdown &countdown) {
     PlayerCardContainer::showProgressBar(countdown);
 }
 
-QGraphicsItem *Dashboard::getMouseClickReceiver() {
-    return _m_rightFrame;
-}
-
 void Dashboard::_createLeft() {
     _paintLeftFrame();
 
@@ -1131,6 +1127,15 @@ void Dashboard::updatePending() {
         pending_card = new_pending_card;
         emit card_selected(pending_card);
     }
+}
+
+void Dashboard::clearPendings()
+{
+    selected = NULL;
+    foreach (CardItem *item, m_handCards) {
+        selectCard(item, false);
+    }
+    pendings.clear();
 }
 
 void Dashboard::onCardItemHover() {

@@ -105,6 +105,8 @@ public:
 
     QPixmap paintByMask(const QPixmap &source);
 
+    bool canBeSelected();
+
     void showSkillName(const QString &skill_name);
 
     QPixmap _getAvatarIcon(const QString &generalName);

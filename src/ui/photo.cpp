@@ -249,10 +249,6 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 }
 
-QGraphicsItem *Photo::getMouseClickReceiver() {
-    return this;
-}
-
 QPointF Photo::getHeroSkinContainerPosition() const
 {
     QRectF tableRect = RoomSceneInstance->getTableRect();

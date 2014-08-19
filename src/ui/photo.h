@@ -37,7 +37,7 @@ public:
 
     void setFrame(FrameType type);
     virtual QRectF boundingRect() const;
-    QGraphicsItem *getMouseClickReceiver();
+    virtual QGraphicsItem *getMouseClickReceiver() { return this; }
 
 public slots:
     void updatePhase();
