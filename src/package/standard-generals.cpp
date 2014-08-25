@@ -1832,11 +1832,14 @@ public:
         return false;
     }
 
-    //处理大乔&小乔的“流离”技能声效索引
     virtual int getEffectIndex(const ServerPlayer *player, const Card *) const {
         int index = qrand() % 2 + 1;
-        if (!player->hasInnateSkill(objectName()) && player->hasSkill("xingwu"))
+        if (Player::isNostalGeneral(player, "daqiao")) {
             index += 2;
+        }
+        else if (!player->hasInnateSkill(objectName()) && player->hasSkill("xingwu")) {
+            index += 4;
+        }
         return index;
     }
 };
