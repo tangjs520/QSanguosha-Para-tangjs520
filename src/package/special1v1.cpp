@@ -115,9 +115,9 @@ public:
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
         if (card->isKindOf("Duel"))
-            return -2;
+            return 2;
         else
-            return -1;
+            return 1;
     }
 };
 
