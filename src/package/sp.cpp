@@ -1020,6 +1020,14 @@ public:
         else
             return 0;
     }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *) const {
+        int index = qrand() % 2 + 1;
+        if (!player->hasInnateSkill(objectName()) && player->hasSkill("zhanshen")) {
+            index += 2;
+        }
+        return index;
+    }
 };
 
 class Xingwu: public TriggerSkill {
