@@ -195,7 +195,11 @@ public:
         QVariant data_card = QVariant::fromValue(card);
         if (room->getCardPlace(card->getEffectiveId()) == Player::PlaceJudge
             && guojia->askForSkillInvoke(objectName(), data_card)) {
-            room->broadcastSkillInvoke(objectName());
+            int effectIndex = qrand() % 2 + 1;
+            if (Player::isNostalGeneral(guojia, "guojia")) {
+                effectIndex += 2;
+            }
+            room->broadcastSkillInvoke(objectName(), effectIndex);
             guojia->obtainCard(judge->card);
             return false;
         }

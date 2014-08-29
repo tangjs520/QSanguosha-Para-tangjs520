@@ -1541,7 +1541,7 @@ void NosYiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
     for (int i = 0; i < x; ++i) {
         if (!guojia->isAlive() || !room->askForSkillInvoke(guojia, objectName()))
             return;
-        room->broadcastSkillInvoke("yiji");
+        room->broadcastSkillInvoke(objectName());
 
         QList<ServerPlayer *> _guojia;
         _guojia.append(guojia);

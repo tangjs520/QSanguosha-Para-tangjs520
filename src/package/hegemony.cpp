@@ -492,11 +492,13 @@ public:
 
             QString choice = room->askForChoice(panfeng, "kuangfu", choicelist.join("+"));
 
+            int effectIndexOffset = (panfeng->getGeneralName() == "sp_panfeng"
+                || panfeng->getGeneral2Name() == "sp_panfeng") ? 2 : 0;
             if (choice == "move") {
-                room->broadcastSkillInvoke(objectName(), 1);
+                room->broadcastSkillInvoke(objectName(), 1 + effectIndexOffset);
                 room->moveCardTo(card, panfeng, Player::PlaceEquip);
             } else {
-                room->broadcastSkillInvoke(objectName(), 2);
+                room->broadcastSkillInvoke(objectName(), 2 + effectIndexOffset);
                 room->throwCard(card, target, panfeng);
             }
         }
