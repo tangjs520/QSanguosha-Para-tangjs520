@@ -161,6 +161,8 @@ void MainWindow::closeEvent(QCloseEvent *event) {
         event->ignore();
     }
     else {
+        deleteClient();
+
         Sanguosha->blockAllRoomSignals(true);
 
         delete systray;
