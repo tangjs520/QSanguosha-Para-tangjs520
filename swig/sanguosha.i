@@ -313,9 +313,6 @@ public:
     void addVictim(ServerPlayer *victim);
     QList<ServerPlayer *> getVictims() const;
 
-    void startRecord();
-    void saveRecord(const char *filename);
-
     void setNext(ServerPlayer *next);
     ServerPlayer *getNext() const;
     ServerPlayer *getNextAlive(int n = 1) const;

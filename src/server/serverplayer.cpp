@@ -4,7 +4,6 @@
 #include "standard.h"
 #include "ai.h"
 #include "settings.h"
-#include "recorder.h"
 #include "banpair.h"
 #include "lua-wrapper.h"
 #include "jsonutils.h"
@@ -18,7 +17,7 @@ const int ServerPlayer::S_NUM_SEMAPHORES = NUMBER_OF_SEMAS;
 ServerPlayer::ServerPlayer(Room *room)
     : Player(room), m_isClientResponseReady(false), m_isWaitingReply(false),
       socket(NULL), room(room),
-      ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL),
+      ai(NULL), trust_ai(new TrustAI(this)),
       _m_phases_index(0), next(NULL), _m_clientResponse(Json::nullValue)
 {
     semas = new QSemaphore *[S_NUM_SEMAPHORES];
@@ -231,9 +230,6 @@ void ServerPlayer::setSocket(ClientSocket *socket) {
 
 void ServerPlayer::unicast(const QString &message) {
     emit message_ready(message);
-
-    if (recorder)
-        recorder->recordLine(message);
 }
 
 void ServerPlayer::startNetworkDelayTest() {
@@ -244,15 +240,6 @@ void ServerPlayer::startNetworkDelayTest() {
 
 qint64 ServerPlayer::endNetworkDelayTest() {
     return test_time.msecsTo(QDateTime::currentDateTime());
-}
-
-void ServerPlayer::startRecord() {
-    recorder = new Recorder(this);
-}
-
-void ServerPlayer::saveRecord(const QString &filename) {
-    if (recorder)
-        recorder->save(filename);
 }
 
 void ServerPlayer::addToSelected(const QString &general) {

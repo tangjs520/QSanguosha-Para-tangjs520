@@ -86,9 +86,6 @@ public:
     void addVictim(ServerPlayer *victim);
     QList<ServerPlayer *> getVictims() const;
 
-    void startRecord();
-    void saveRecord(const QString &filename);
-
     void setNext(ServerPlayer *next);
     ServerPlayer *getNext() const;
     ServerPlayer *getNextAlive(int n = 1) const;
@@ -165,7 +162,6 @@ private:
     AI *ai;
     AI *trust_ai;
     QList<ServerPlayer *> victims;
-    Recorder *recorder;
     QList<Phase> phases;
     int _m_phases_index;
     QList<PhaseStruct> _m_phases_state;
