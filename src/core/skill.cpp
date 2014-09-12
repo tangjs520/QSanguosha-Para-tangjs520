@@ -30,7 +30,8 @@ Skill::Skill(const QString &name, Frequency frequency)
     }
 }
 
-QString Skill::getDescription() const{
+QString Skill::getDescription() const
+{
     bool normal_game = ServerInfo.DuringGame && isNormalGameMode(ServerInfo.GameMode);
     QString name = QString("%1%2").arg(objectName()).arg(normal_game ? "_p" : "");
     QString des_src = Sanguosha->translate(":" + name);

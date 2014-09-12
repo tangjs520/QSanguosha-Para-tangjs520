@@ -1126,9 +1126,6 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     if (card == NULL)
         return _askForNullification(trick, from, to, positive, aiHelper);
 
-    doAnimate(S_ANIMATE_NULLIFICATION, repliedPlayer->objectName(), to->objectName());
-    useCard(CardUseStruct(card, repliedPlayer, QList<ServerPlayer *>()));
-
     LogMessage log;
     log.type = "#NullificationDetails";
     log.from = from;
@@ -1136,6 +1133,15 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     log.arg = trick_name;
     sendLog(log);
     thread->delay(500);
+
+    useCard(CardUseStruct(card, repliedPlayer, QList<ServerPlayer *>()));
+
+    QVariant cardData = QVariant::fromValue(card);
+    if (thread->trigger(NullificationEffect, this, repliedPlayer, cardData)) {
+        return _askForNullification(trick, from, to, positive, aiHelper);
+    }
+
+    doAnimate(S_ANIMATE_NULLIFICATION, repliedPlayer->objectName(), to->objectName());
 
     QVariant decisionData = QVariant::fromValue("Nullification:" + QString(trick->getClassName())
                                                 + ":" + to->objectName() + ":" + (positive ? "true" : "false"));
@@ -1201,9 +1207,14 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
             if (!success || !clientReply.isInt()) {
                 // randomly choose a card
                 QList<const Card *> cards = who->getCards(flags);
-                do {
-                    card_id = cards.at(qrand() % cards.length())->getId();
-                } while (method == Card::MethodDiscard && !player->canDiscard(who, card_id));
+                if (method == Card::MethodDiscard) {
+                    foreach (const Card *card, cards) {
+                        if (!player->canDiscard(who, card->getEffectiveId()) || disabled_ids.contains(card->getEffectiveId()))
+                            cards.removeOne(card);
+                    }
+                }
+                Q_ASSERT(!cards.isEmpty());
+                card_id = cards.at(qrand() % cards.length())->getId();
             } else
                 card_id = clientReply.asInt();
 
@@ -1957,7 +1968,39 @@ void Room::setFixedDistance(Player *from, const Player *to, int distance) {
     arg[0] = toJsonString(from->objectName());
     arg[1] = toJsonString(to->objectName());
     arg[2] = distance;
+    arg[3] = true;
     doBroadcastNotify(S_COMMAND_FIXED_DISTANCE, arg);
+}
+
+void Room::removeFixedDistance(Player *from, const Player *to, int distance) {
+    from->removeFixedDistance(to, distance);
+
+    Json::Value arg(Json::arrayValue);
+    arg[0] = toJsonString(from->objectName());
+    arg[1] = toJsonString(to->objectName());
+    arg[2] = distance;
+    arg[3] = false;
+    doBroadcastNotify(S_COMMAND_FIXED_DISTANCE, arg);
+}
+
+void Room::insertAttackRangePair(Player *from, const Player *to) {
+    from->insertAttackRangePair(to);
+
+    Json::Value arg(Json::arrayValue);
+    arg[0] = toJsonString(from->objectName());
+    arg[1] = toJsonString(to->objectName());
+    arg[2] = true;
+    doBroadcastNotify(S_COMMAND_ATTACK_RANGE, arg);
+}
+
+void Room::removeAttackRangePair(Player *from, const Player *to) {
+    from->removeAttackRangePair(to);
+
+    Json::Value arg(Json::arrayValue);
+    arg[0] = toJsonString(from->objectName());
+    arg[1] = toJsonString(to->objectName());
+    arg[2] = false;
+    doBroadcastNotify(S_COMMAND_ATTACK_RANGE, arg);
 }
 
 void Room::reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPlayer *> &list) {
@@ -4593,10 +4636,10 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open) {
                 acquireSkill(player, related_skill);
             }
         }
-
-        QVariant data = skill_name;
-        thread->trigger(EventAcquireSkill, this, player, data);
     }
+
+    QVariant data = skill_name;
+    thread->trigger(EventAcquireSkill, this, player, data);
 }
 
 void Room::acquireSkill(ServerPlayer *player, const QString &skill_name, bool open) {

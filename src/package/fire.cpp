@@ -403,7 +403,8 @@ public:
     }
 };
 
-class Kanpo: public OneCardViewAsSkill {
+class Kanpo: public OneCardViewAsSkill
+{
 public:
     Kanpo(): OneCardViewAsSkill("kanpo") {
         filter_pattern = ".|black|.|hand";
@@ -411,17 +412,32 @@ public:
         response_or_use = true;
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const {
         Card *ncard = new Nullification(originalCard->getSuit(), originalCard->getNumber());
         ncard->addSubcard(originalCard);
         ncard->setSkillName(objectName());
         return ncard;
     }
 
-    virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
-        foreach (const Card *card, player->getHandcards()) {
-            if (card->isBlack()) return true;
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const {
+        if (!player->isKongcheng()) {
+            foreach (const Card *card, player->getHandcards()) {
+                if (card->isBlack()) {
+                    return true;
+                }
+            }
         }
+
+        QList<int> pile = player->getPile("wooden_ox");
+        if (!pile.isEmpty()) {
+            foreach (int id, pile) {
+                const Card *card = Sanguosha->getCard(id);
+                if (card->isBlack()) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 };

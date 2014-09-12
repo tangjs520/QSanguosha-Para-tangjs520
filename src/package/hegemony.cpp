@@ -50,7 +50,10 @@ public:
             ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "shushen-invoke", true, true);
             if (target) {
                 room->broadcastSkillInvoke(objectName(), target->getGeneralName().contains("liubei") ? 2 : 1);
-                target->drawCards(1, objectName());
+                if (target->isWounded() && room->askForChoice(player, objectName(), "recover+draw", QVariant::fromValue(target)) == "recover")
+                    room->recover(target, RecoverStruct(player));
+                else
+                    target->drawCards(2, objectName());
             } else {
                 break;
             }
@@ -183,7 +186,7 @@ public:
         ServerPlayer *target = dingfeng->tag["FenxunTarget"].value<ServerPlayer *>();
 
         if (target) {
-            room->setFixedDistance(dingfeng, target, -1);
+            room->removeFixedDistance(dingfeng, target, 1);
             dingfeng->tag.remove("FenxunTarget");
         }
         return false;

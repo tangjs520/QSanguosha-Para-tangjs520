@@ -861,15 +861,24 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
     return result;
 }
 
-static bool CompareByNumber(const CardItem *a, const CardItem *b)  {
+void Dashboard::updateAvatar()
+{
+    PlayerCardContainer::updateAvatar();
+    _m_skillDock->update();
+}
+
+static bool CompareByNumber(const CardItem *a, const CardItem *b)
+{
     return Card::CompareByNumber(a->getCard(), b->getCard());
 }
 
-static bool CompareBySuit(const CardItem *a, const CardItem *b)  {
+static bool CompareBySuit(const CardItem *a, const CardItem *b)
+{
     return Card::CompareBySuit(a->getCard(), b->getCard());
 }
 
-static bool CompareByType(const CardItem *a, const CardItem *b)  {
+static bool CompareByType(const CardItem *a, const CardItem *b)
+{
     return Card::CompareByType(a->getCard(), b->getCard());
 }
 

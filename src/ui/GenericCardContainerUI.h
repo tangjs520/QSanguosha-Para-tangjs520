@@ -122,7 +122,7 @@ public:
     void stopHeroSkinChangingAnimation();
 
 public slots:
-    void updateAvatar();
+    virtual void updateAvatar();
     void updateSmallAvatar();
     void updateReadyItem(bool visible);
     void updatePhase();

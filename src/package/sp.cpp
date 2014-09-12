@@ -1591,6 +1591,124 @@ public:
     }
 };
 
+class Meibu: public TriggerSkill {
+public:
+    Meibu(): TriggerSkill("meibu") {
+        events << EventPhaseStart << EventPhaseChanging;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Play) {
+            foreach (ServerPlayer *sunluyu, room->getOtherPlayers(player)) {
+                if (!player->inMyAttackRange(sunluyu) && TriggerSkill::triggerable(sunluyu)
+                    && room->askForSkillInvoke(sunluyu, objectName())) {
+                        room->broadcastSkillInvoke(objectName());
+                        if (!player->hasSkill("#meibu-filter", true))
+                            room->acquireSkill(player, "#meibu-filter", false);
+                        QVariantList sunluyus = player->tag[objectName()].toList();
+                        sunluyus << QVariant::fromValue(sunluyu);
+                        player->tag[objectName()] = QVariant::fromValue(sunluyus);
+                        room->insertAttackRangePair(player, sunluyu);
+                }
+            }
+        } else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to != Player::NotActive) return false;
+
+            QVariantList sunluyus = player->tag[objectName()].toList();
+            foreach (QVariant sunluyu, sunluyus) {
+                ServerPlayer *s = sunluyu.value<ServerPlayer *>();
+                room->removeAttackRangePair(player, s);
+            }
+        }
+        return false;
+    }
+};
+
+class MeibuFilter: public FilterSkill {
+public:
+    MeibuFilter(): FilterSkill("#meibu-filter") {
+    }
+
+    virtual bool viewFilter(const Card *to_select) const{
+        return to_select->getTypeId() == Card::TypeTrick;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+        slash->setSkillName("meibu");
+        WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
+        card->takeOver(slash);
+        return card;
+    }
+};
+
+class Mumu: public TriggerSkill {
+public:
+    Mumu(): TriggerSkill("mumu") {
+        events << PreDamageDone << EventPhaseStart;
+        global = true;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Finish) {
+            bool can_trigger = true;
+            if (player->hasFlag("MumuDamageInPlayPhase")) {
+                can_trigger = false;
+                player->setFlags("-MumuDamageInPlayPhase");
+            }
+            if (player->isAlive() && player->hasSkill(objectName()) && can_trigger) {
+                QList<ServerPlayer *> weapon_players, armor_players;
+                foreach (ServerPlayer *p, room->getAlivePlayers()) {
+                    if (p->getWeapon() && player->canDiscard(p, p->getWeapon()->getEffectiveId()))
+                        weapon_players << p;
+                    if (p != player && p->getArmor())
+                        armor_players << p;
+                }
+                QStringList choices;
+                choices << "cancel";
+                if (!armor_players.isEmpty()) choices.prepend("armor");
+                if (!weapon_players.isEmpty()) choices.prepend("weapon");
+                if (choices.length() == 1) return false;
+                QString choice = room->askForChoice(player, objectName(), choices.join("+"));
+                if (choice == "cancel") {
+                    return false;
+                } else {
+                    room->notifySkillInvoked(player, objectName());
+                    if (choice == "weapon") {
+                        room->broadcastSkillInvoke(objectName(), 1);
+                        ServerPlayer *victim = room->askForPlayerChosen(player, weapon_players, objectName(), "@mumu-weapon");
+                        room->throwCard(victim->getWeapon(), victim, player);
+                        player->drawCards(1, objectName());
+                    } else {
+                        room->broadcastSkillInvoke(objectName(), 2);
+                        ServerPlayer *victim = room->askForPlayerChosen(player, armor_players, objectName(), "@mumu-armor");
+                        int equip = victim->getArmor()->getEffectiveId();
+                        QList<CardsMoveStruct> exchangeMove;
+                        CardsMoveStruct move1(equip, player, Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_ROB, player->objectName()));
+                        exchangeMove.push_back(move1);
+                        if (player->getArmor()) {
+                            CardsMoveStruct move2(player->getArmor()->getEffectiveId(), NULL, Player::DiscardPile,
+                                CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, player->objectName()));
+                            exchangeMove.push_back(move2);
+                        }
+                        room->moveCardsAtomic(exchangeMove, true);
+                    }
+                }
+            }
+        } else if (triggerEvent == PreDamageDone) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->getPhase() == Player::Play && !damage.from->hasFlag("MumuDamageInPlayPhase"))
+                damage.from->setFlags("MumuDamageInPlayPhase");
+        }
+        return false;
+    }
+};
+
 #include "jsonutils.h"
 class AocaiViewAsSkill: public ZeroCardViewAsSkill {
 public:
@@ -2224,6 +2342,71 @@ public:
     }
 };
 
+SanyaoCard::SanyaoCard() {
+}
+
+bool SanyaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if (!targets.isEmpty()) return false;
+    QList<const Player *> players = Self->getAliveSiblings();
+    players << Self;
+    int max = -1000;
+    foreach (const Player *p, players) {
+        if (max < p->getHp()) max = p->getHp();
+    }
+    return to_select->getHp() == max;
+}
+
+void SanyaoCard::onEffect(const CardEffectStruct &effect) const{
+    effect.from->getRoom()->damage(DamageStruct("sanyao", effect.from, effect.to));
+}
+
+class Sanyao: public OneCardViewAsSkill {
+public:
+    Sanyao(): OneCardViewAsSkill("sanyao") {
+        filter_pattern = ".!";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->canDiscard(player, "he") && !player->hasUsed("SanyaoCard");
+    }
+
+    virtual const Card *viewAs(const Card *originalcard) const{
+        SanyaoCard *first = new SanyaoCard;
+        first->addSubcard(originalcard->getId());
+        first->setSkillName(objectName());
+        return first;
+    }
+};
+
+class Zhiman: public TriggerSkill {
+public:
+    Zhiman(): TriggerSkill("zhiman") {
+        events << DamageCaused;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+
+        if (player->askForSkillInvoke(objectName(), data)) {
+            room->broadcastSkillInvoke(objectName());
+            LogMessage log;
+            log.type = "#Yishi";
+            log.from = player;
+            log.arg = objectName();
+            log.to << damage.to;
+            room->sendLog(log);
+
+            if (damage.to->getEquips().isEmpty() && damage.to->getJudgingArea().isEmpty())
+                return false;
+            int card_id = room->askForCardChosen(player, damage.to, "ej", objectName());
+            CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
+            room->obtainCard(player, Sanguosha->getCard(card_id), reason);
+            return true;
+        }
+        return false;
+    }
+};
+
 SPCardPackage::SPCardPackage()
     : Package("sp_cards")
 {
@@ -2377,9 +2560,17 @@ SPPackage::SPPackage()
     sp_hetaihou->addSkill("zhendu");
     sp_hetaihou->addSkill("qiluan");
 
+    General *sunluyu = new General(this, "sunluyu", "wu", 3, false); // SP 034
+    sunluyu->addSkill(new Meibu);
+    sunluyu->addSkill(new Mumu);
+
     General *maliang = new General(this, "maliang", "shu", 3); // SP 035
     maliang->addSkill(new Xiemu);
     maliang->addSkill(new Naman);
+
+    General *sp_ganfuren = new General(this, "sp_ganfuren", "shu", 3, false, true); // SP 037
+    sp_ganfuren->addSkill("shushen");
+    sp_ganfuren->addSkill("shenzhi");
 
     addMetaObject<YuanhuCard>();
     addMetaObject<XuejiCard>();
@@ -2390,7 +2581,7 @@ SPPackage::SPPackage()
     addMetaObject<YinbingCard>();
     addMetaObject<XiemuCard>();
 
-    skills << new Weizhong;
+    skills << new Weizhong << new MeibuFilter;
 }
 
 ADD_PACKAGE(SP)
@@ -2415,6 +2606,10 @@ OLPackage::OLPackage()
     ol_fazheng->addSkill("enyuan");
     ol_fazheng->addSkill("xuanhuo");
 
+    General *ol_masu = new General(this, "ol_masu", "shu", 3);
+    ol_masu->addSkill(new Sanyao);
+    ol_masu->addSkill(new Zhiman);
+
     General *ol_xushu = new General(this, "ol_xushu", "shu", 3, true, true);
     ol_xushu->addSkill("wuyan");
     ol_xushu->addSkill("jujian");
@@ -2433,6 +2628,7 @@ OLPackage::OLPackage()
     addMetaObject<AocaiCard>();
     addMetaObject<DuwuCard>();
     addMetaObject<QingyiCard>();
+    addMetaObject<SanyaoCard>();
 }
 
 ADD_PACKAGE(OL)

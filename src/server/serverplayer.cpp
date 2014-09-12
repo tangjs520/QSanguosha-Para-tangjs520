@@ -916,6 +916,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player) {
 void ServerPlayer::marshal(ServerPlayer *player) const{
     room->notifyProperty(player, this, "maxhp");
     room->notifyProperty(player, this, "hp");
+    room->notifyProperty(player, this, "gender");
 
     const General *general = getGeneral();
     if (general && getKingdom() != general->getKingdom()) {

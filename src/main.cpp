@@ -1,18 +1,14 @@
 #include <QApplication>
-
 #include <QCoreApplication>
 #include <QTranslator>
 #include <QDir>
 #include <QTime>
-#include <cstring>
-#include <QDesktopWidget>
 #include <QTextCodec>
 
 #include "mainwindow.h"
 #include "settings.h"
 #include "banpair.h"
 #include "server.h"
-#include "audio.h"
 #include "companion-table.h"
 
 #if defined(WIN32) && defined(VS2010)
