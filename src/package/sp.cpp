@@ -1619,6 +1619,12 @@ public:
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to != Player::NotActive) return false;
 
+            if (player->hasSkill("#meibu-filter", true)) {
+                player->detachSkill("#meibu-filter");
+                QVariant data = "#meibu-filter";
+                room->getThread()->trigger(EventLoseSkill, room, player, data);
+            }
+
             QVariantList sunluyus = player->tag[objectName()].toList();
             foreach (QVariant sunluyu, sunluyus) {
                 ServerPlayer *s = sunluyu.value<ServerPlayer *>();
