@@ -672,6 +672,7 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
     }
 
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
+    bool all_nullified = nullified_list.contains("_ALL_TARGETS");
     foreach (ServerPlayer *target, targets) {
         if (!target) {
             continue;
@@ -682,7 +683,7 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         effect.from = source;
         effect.to = target;
         effect.multiple = multiTarget;
-        effect.nullified = (nullified_list.contains(target->objectName()));
+        effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
 
         room->cardEffect(effect);
     }
@@ -835,7 +836,7 @@ QString SkillCard::toString(bool hidden) const{
     else
         str = QString("@%1[no_suit:-]=.").arg(metaObject()->className());
 
-    if (!user_string.isEmpty())
+    if (!hidden && !user_string.isEmpty())
         return QString("%1:%2").arg(str).arg(user_string);
     else
         return str;

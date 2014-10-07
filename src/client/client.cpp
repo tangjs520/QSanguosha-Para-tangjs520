@@ -1020,6 +1020,7 @@ void Client::askForSkillInvoke(const Json::Value &arg)
     }
 
     skill_to_invoke = skill_name;
+    skill_to_invoke_data = data;
 
     QString text;
     if (data.isEmpty()) {
@@ -1071,6 +1072,7 @@ void Client::askForSurrender(const Json::Value &initiator)
 void Client::askForLuckCard(const Json::Value &)
 {
     skill_to_invoke = "luck_card";
+    skill_to_invoke_data = QString();
     prompt_doc->setHtml(tr("Do you want to use the luck card?"));
     setStatus(AskForSkillInvoke);
 }

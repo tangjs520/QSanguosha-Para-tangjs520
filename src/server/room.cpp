@@ -4630,6 +4630,9 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open) {
             doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
         }
 
+        QVariant data = skill_name;
+        thread->trigger(EventAcquireSkill, this, player, data);
+
         QList<const Skill *> relatedSkills = Sanguosha->getRelatedSkills(skill_name);
         foreach (const Skill *related_skill, relatedSkills) {
             if (NULL != related_skill && !related_skill->isVisible()) {
@@ -4637,9 +4640,6 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open) {
             }
         }
     }
-
-    QVariant data = skill_name;
-    thread->trigger(EventAcquireSkill, this, player, data);
 }
 
 void Room::acquireSkill(ServerPlayer *player, const QString &skill_name, bool open) {

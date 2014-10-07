@@ -126,6 +126,8 @@ class RoomScene : public SanScene {
     Q_OBJECT
 
 public:
+    enum ShefuAskState { ShefuAskAll, ShefuAskNecessary, ShefuAskNone };
+
     explicit RoomScene(QMainWindow *mainWindow);
 
     ~RoomScene() {
@@ -176,6 +178,7 @@ public:
     bool m_notShowTargetsEnablityAnimation;
 
     bool m_skillButtonSank;
+    ShefuAskState m_ShefuAskState;
 
 public slots:
     void addPlayer(ClientPlayer *player);

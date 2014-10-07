@@ -122,6 +122,14 @@
 "playerGeneralIcon-erqiao-7": "image/generals/big/erqiao.png",
 "playerGeneralIcon-erqiao-8": "image/generals/kof/erqiao.png",
 
+"playerGeneralIcon-huangjinleishi-0": ["image/generals/big/huangjinleishi.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-huangjinleishi-2": "image/generals/big/huangjinleishi.png",
+"playerGeneralIcon-huangjinleishi-4": ["image/fullskin/generals/fulldual/huangjinleishi.png", [0, 0, 124, 289], [77, 179]],
+"playerGeneralIcon-huangjinleishi-5": ["image/generals/big/huangjinleishi.png", [0, 0, 134, 134], [70, 70]],
+"playerGeneralIcon-huangjinleishi-6": ["image/fullskin/generals/fulldual/huangjinleishi.png", [0, 0, 250, 289], [155, 179]],
+"playerGeneralIcon-huangjinleishi-7": "image/generals/big/huangjinleishi.png",
+"playerGeneralIcon-huangjinleishi-8": "image/generals/kof/huangjinleishi.png",
+
 "playerGeneralIcon-jiangwanfeiyi-0": ["image/generals/big/jiangwanfeiyi.png", [0, 0, 134, 134], [40, 40]],
 "playerGeneralIcon-jiangwanfeiyi-2": "image/generals/big/jiangwanfeiyi.png",
 "playerGeneralIcon-jiangwanfeiyi-4": ["image/fullskin/generals/fulldual/jiangwanfeiyi.png", [0, 0, 124, 289], [77, 179]],
@@ -153,6 +161,38 @@
 "playerGeneralIcon-nos_guanxingzhangbao-6": ["image/fullskin/generals/fulldual/nos_guanxingzhangbao.png", [0, 0, 250, 289], [155, 179]],
 "playerGeneralIcon-nos_guanxingzhangbao-7": "image/generals/big/nos_guanxingzhangbao.png",
 "playerGeneralIcon-nos_guanxingzhangbao-8": "image/generals/kof/nos_guanxingzhangbao.png",
+
+"playerGeneralIcon-jg_machine_tuntianchiwen-0": ["image/generals/big/jg_machine_tuntianchiwen.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-jg_machine_tuntianchiwen-2": "image/generals/big/jg_machine_tuntianchiwen.png",
+"playerGeneralIcon-jg_machine_tuntianchiwen-5": ["image/generals/big/jg_machine_tuntianchiwen.png", [0, 0, 134, 134], [70, 70]],
+
+"playerGeneralIcon-jg_machine_shihuosuanni-0": ["image/generals/big/jg_machine_shihuosuanni.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-jg_machine_shihuosuanni-2": "image/generals/big/jg_machine_shihuosuanni.png",
+"playerGeneralIcon-jg_machine_shihuosuanni-5": ["image/generals/big/jg_machine_shihuosuanni.png", [0, 0, 134, 134], [70, 70]],
+
+"playerGeneralIcon-jg_machine_fudibian-0": ["image/generals/big/jg_machine_fudibian.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-jg_machine_fudibian-2": "image/generals/big/jg_machine_fudibian.png",
+"playerGeneralIcon-jg_machine_fudibian-5": ["image/generals/big/jg_machine_fudibian.png", [0, 0, 134, 134], [70, 70]],
+
+"playerGeneralIcon-jg_machine_lieshiyazi-0": ["image/generals/big/jg_machine_lieshiyazi.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-jg_machine_lieshiyazi-2": "image/generals/big/jg_machine_lieshiyazi.png",
+"playerGeneralIcon-jg_machine_lieshiyazi-5": ["image/generals/big/jg_machine_lieshiyazi.png", [0, 0, 134, 134], [70, 70]],
+
+"playerGeneralIcon-jg_machine_yunpingqinglong-0": ["image/generals/big/jg_machine_yunpingqinglong.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-jg_machine_yunpingqinglong-2": "image/generals/big/jg_machine_yunpingqinglong.png",
+"playerGeneralIcon-jg_machine_yunpingqinglong-5": ["image/generals/big/jg_machine_yunpingqinglong.png", [0, 0, 134, 134], [70, 70]],
+
+"playerGeneralIcon-jg_machine_jileibaihu-0": ["image/generals/big/jg_machine_jileibaihu.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-jg_machine_jileibaihu-2": "image/generals/big/jg_machine_jileibaihu.png",
+"playerGeneralIcon-jg_machine_jileibaihu-5": ["image/generals/big/jg_machine_jileibaihu.png", [0, 0, 134, 134], [70, 70]],
+
+"playerGeneralIcon-jg_machine_lingjiaxuanwu-0": ["image/generals/big/jg_machine_lingjiaxuanwu.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-jg_machine_lingjiaxuanwu-2": "image/generals/big/jg_machine_lingjiaxuanwu.png",
+"playerGeneralIcon-jg_machine_lingjiaxuanwu-5": ["image/generals/big/jg_machine_lingjiaxuanwu.png", [0, 0, 134, 134], [70, 70]],
+
+"playerGeneralIcon-jg_machine_chiyuzhuque-0": ["image/generals/big/jg_machine_chiyuzhuque.png", [0, 0, 134, 134], [40, 40]],
+"playerGeneralIcon-jg_machine_chiyuzhuque-2": "image/generals/big/jg_machine_chiyuzhuque.png",
+"playerGeneralIcon-jg_machine_chiyuzhuque-5": ["image/generals/big/jg_machine_chiyuzhuque.png", [0, 0, 134, 134], [70, 70]],
 
 // 0: Default skin
 "heroSkinContainerGeneralIcon-default-0": ["image/fullskin/generals/full/%1.png", [55, 0, 155, 292]],

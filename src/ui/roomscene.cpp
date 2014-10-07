@@ -77,6 +77,7 @@ RoomScene::RoomScene(QMainWindow *mainWindow)
     _m_commonLayout = &(G_ROOM_SKIN.getCommonLayout());
 
     m_skillButtonSank = false;
+    m_ShefuAskState = ShefuAskNecessary;
 
     // create photos
     for (int i = 0; i < player_count - 1; ++i) {
@@ -2647,6 +2648,15 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         }
     case Client::AskForSkillInvoke: {
             QString skill_name = ClientInstance->getSkillNameToInvoke();
+            if (skill_name == "shefu_cancel") {
+                QString data = ClientInstance->getSkillNameToInvokeData().split(":").last();
+                if (m_ShefuAskState == ShefuAskNone
+                    || (m_ShefuAskState == ShefuAskNecessary
+                    && Self->getMark("Shefu_" + data) == 0)) {
+                    ClientInstance->onPlayerInvokeSkill(false);
+                    return;
+                }
+            }
             dashboard->highlightEquip(skill_name, true);
             foreach (QSanSkillButton *button, m_skillButtons) {
                 if (button->getSkill()->objectName() == skill_name) {

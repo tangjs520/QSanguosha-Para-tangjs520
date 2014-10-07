@@ -702,26 +702,36 @@ void Player::setChained(bool chained) {
     }
 }
 
-void Player::addMark(const QString &mark, int add_num) {
+void Player::addMark(const QString &mark, int add_num)
+{
     int value = marks.value(mark, 0);
     value += add_num;
     setMark(mark, value);
 }
 
-void Player::removeMark(const QString &mark, int remove_num) {
+void Player::removeMark(const QString &mark, int remove_num)
+{
     int value = marks.value(mark, 0);
     value -= remove_num;
     value = qMax(0, value);
     setMark(mark, value);
 }
 
-void Player::setMark(const QString &mark, int value) {
-    if (marks[mark] != value)
+void Player::setMark(const QString &mark, int value)
+{
+    if (marks[mark] != value) {
         marks[mark] = value;
+    }
 }
 
-int Player::getMark(const QString &mark) const{
+int Player::getMark(const QString &mark) const
+{
     return marks.value(mark, 0);
+}
+
+QStringList Player::getMarkNames() const
+{
+    return marks.keys();
 }
 
 bool Player::canSlash(const Player *other, const Card *slash, bool distance_limit,

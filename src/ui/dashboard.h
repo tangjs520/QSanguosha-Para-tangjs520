@@ -119,8 +119,10 @@ public slots:
     virtual void updateAvatar();
     void sortCards();
     void beginSorting();
+    void changeShefuState();
     void reverseSelection();
     void cancelNullification();
+    void setShefuState();
     void skillButtonActivated();
     void skillButtonDeactivated();
     void selectAll();
@@ -179,6 +181,7 @@ protected:
     QSanButton *m_btnReverseSelection;
     QSanButton *m_btnSortHandcard;
     QSanButton *m_btnNoNullification;
+    QSanButton *m_btnShefu;
     QGraphicsPixmapItem *_m_leftFrame, *_m_middleFrame, *_m_rightFrame;
     QGraphicsPixmapItem *button_widget;
 
@@ -224,6 +227,7 @@ protected:
     void setSelectedItem(CardItem *card_item);
 
     QMenu *_m_sort_menu;
+    QMenu *_m_shefu_menu;
     QMenu *_m_carditem_context_menu;
 
     //保存当前移进Dashboard可使用的卡牌

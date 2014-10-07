@@ -56,7 +56,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data) const{
         if (TriggerSkill::triggerable(target) && triggerEvent == EventPhaseStart
             && target->getPhase() == Player::Finish && target->isWounded() && target->askForSkillInvoke(objectName())) {
-                room->broadcastSkillInvoke(objectName(), 1);
+                room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
                 QStringList draw_num;
                 for (int i = 1; i <= target->getLostHp(); draw_num << QString::number(i++)) {}
                 int num = room->askForChoice(target, "miji_draw", draw_num.join("+")).toInt();
@@ -90,7 +90,7 @@ public:
                                 break;
                         }
                     }
-                    room->broadcastSkillInvoke(objectName(), qrand() % 2 + 2);
+                    room->broadcastSkillInvoke(objectName(), qrand() % 2 + 3);
                 }
         } else if (triggerEvent == ChoiceMade) {
             QString str = data.toString();

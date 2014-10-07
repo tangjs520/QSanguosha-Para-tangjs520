@@ -41,7 +41,11 @@ public:
         const Card *card = room->askForCard(player, ".|black", prompt, data, Card::MethodResponse, judge->who, true);
 
         if (card != NULL) {
-            room->broadcastSkillInvoke(objectName());
+            int effectIndex = qrand() % 2 + 1;
+            if (Player::isNostalGeneral(player, "zhangjiao")) {
+                effectIndex += 2;
+            }
+            room->broadcastSkillInvoke(objectName(), effectIndex);
             room->retrial(card, player, judge, objectName(), true);
         }
         return false;
@@ -107,7 +111,11 @@ void HuangtianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
     if (zhangjiao->hasLordSkill("huangtian")) {
         room->setPlayerFlag(zhangjiao, "HuangtianInvoked");
 
-        room->broadcastSkillInvoke("huangtian");
+        int effectIndex = qrand() % 2 + 1;
+        if (Player::isNostalGeneral(zhangjiao, "zhangjiao")) {
+            effectIndex += 2;
+        }
+        room->broadcastSkillInvoke("huangtian", effectIndex);
         room->notifySkillInvoked(zhangjiao, "huangtian");
 
         CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), zhangjiao->objectName(), "huangtian", QString());
@@ -651,15 +659,23 @@ public:
 #include <QVBoxLayout>
 #include <QCommandLinkButton>
 
-GuhuoDialog *GuhuoDialog::getInstance(const QString &object, bool left, bool right) {
+GuhuoDialog *GuhuoDialog::getInstance(const QString &object, bool left, bool right,
+    bool play_only, bool slash_combined, bool delayed_tricks)
+{
     static GuhuoDialog *instance;
-    if (instance == NULL || instance->objectName() != object)
-        instance = new GuhuoDialog(object, left, right);
+    if (instance == NULL || instance->objectName() != object) {
+        instance = new GuhuoDialog(object, left, right,
+            play_only, slash_combined, delayed_tricks);
+    }
 
     return instance;
 }
 
-GuhuoDialog::GuhuoDialog(const QString &object, bool left, bool right): object_name(object) {
+GuhuoDialog::GuhuoDialog(const QString &object, bool left, bool right, bool play_only,
+    bool slash_combined, bool delayed_tricks)
+    : object_name(object), play_only(play_only),
+    slash_combined(slash_combined), delayed_tricks(delayed_tricks)
+{
     setObjectName(object);
     setWindowTitle(Sanguosha->translate(object));
     group = new QButtonGroup(this);
@@ -672,16 +688,30 @@ GuhuoDialog::GuhuoDialog(const QString &object, bool left, bool right): object_n
     connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectCard(QAbstractButton *)));
 }
 
-void GuhuoDialog::popup() {
-    if (Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
+bool GuhuoDialog::isButtonEnabled(const QString &button_name) const
+{
+    const Card *card = map[button_name];
+    return !Self->isCardLimited(card, Card::MethodUse, true) && card->isAvailable(Self);
+}
+
+void GuhuoDialog::popup()
+{
+    if (play_only && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
         emit onButtonClick();
         return;
     }
 
+    bool has_enabled_button = false;
     foreach (QAbstractButton *button, group->buttons()) {
-        const Card *card = map[button->objectName()];
-        bool enabled = !Self->isCardLimited(card, Card::MethodUse, true) && card->isAvailable(Self);
+        bool enabled = isButtonEnabled(button->objectName());
+        if (enabled) {
+            has_enabled_button = true;
+        }
         button->setEnabled(enabled);
+    }
+    if (!has_enabled_button) {
+        emit onButtonClick();
+        return;
     }
 
     Self->tag.remove(object_name);
@@ -710,12 +740,14 @@ QGroupBox *GuhuoDialog::createLeft() {
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName())
-            && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            && !ServerInfo.Extensions.contains("!" + card->getPackage())
+            && !(slash_combined && map.contains("slash") && card->objectName().contains("slash"))) {
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setParent(this);
             layout->addWidget(createButton(c));
 
-            if (card->objectName() == "slash" && !ServerInfo.Extensions.contains("!maneuvering")) {
+            if (!slash_combined && card->objectName() == "slash"
+                && !ServerInfo.Extensions.contains("!maneuvering")) {
                 Card *c2 = Sanguosha->cloneCard(card->objectName());
                 c2->setParent(this);
                 layout->addWidget(createButton(c2));
@@ -729,7 +761,7 @@ QGroupBox *GuhuoDialog::createLeft() {
 }
 
 QGroupBox *GuhuoDialog::createRight() {
-    QGroupBox *box = new QGroupBox(Sanguosha->translate("ndtrick"));
+    QGroupBox *box = new QGroupBox(Sanguosha->translate("trick"));
     QHBoxLayout *layout = new QHBoxLayout;
 
     QGroupBox *box1 = new QGroupBox(Sanguosha->translate("single_target_trick"));
@@ -738,16 +770,25 @@ QGroupBox *GuhuoDialog::createRight() {
     QGroupBox *box2 = new QGroupBox(Sanguosha->translate("multiple_target_trick"));
     QVBoxLayout *layout2 = new QVBoxLayout;
 
+    QGroupBox *box3 = new QGroupBox(Sanguosha->translate("delayed_trick"));
+    QVBoxLayout *layout3 = new QVBoxLayout;
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     foreach (const Card *card, cards) {
-        if (card->isNDTrick() && !map.contains(card->objectName())
+        if (card->getTypeId() == Card::TypeTrick && (delayed_tricks || card->isNDTrick())
+            && !map.contains(card->objectName())
             && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setSkillName(object_name);
             c->setParent(this);
 
-            QVBoxLayout *layout = c->isKindOf("SingleTargetTrick") ? layout1 : layout2;
+            QVBoxLayout *layout;
+            if (c->isKindOf("DelayedTrick"))
+                layout = layout3;
+            else if (c->isKindOf("SingleTargetTrick"))
+                layout = layout1;
+            else
+                layout = layout2;
             layout->addWidget(createButton(c));
         }
     }
@@ -755,12 +796,16 @@ QGroupBox *GuhuoDialog::createRight() {
     box->setLayout(layout);
     box1->setLayout(layout1);
     box2->setLayout(layout2);
+    box3->setLayout(layout3);
 
     layout1->addStretch();
     layout2->addStretch();
+    layout3->addStretch();
 
     layout->addWidget(box1);
     layout->addWidget(box2);
+    if (delayed_tricks)
+        layout->addWidget(box3);
     return box;
 }
 
