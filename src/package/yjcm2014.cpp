@@ -747,7 +747,7 @@ public:
                     const Card *card = room->askForCard(target, "..", "@zenhui-give:" + player->objectName(), data, Card::MethodNone);
                     if (card) {
                         extra_target = false;
-                        player->obtainCard(card);
+                        player->obtainCard(card, true, CardMoveReason::S_REASON_GIVE);
 
                         if (target->isAlive()) {
                             LogMessage log;

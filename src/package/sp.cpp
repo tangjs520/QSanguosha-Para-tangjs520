@@ -1457,7 +1457,7 @@ public:
                             Q_ASSERT(player->getCardCount() == 1);
                             card = player->getCards("he").first();
                         }
-                        to->obtainCard(card);
+                        to->obtainCard(card, true, CardMoveReason::S_REASON_GIVE);
                         if (card->getTypeId() == Card::TypeEquip && room->getCardOwner(card->getEffectiveId()) == to
                             && !to->isLocked(card)) {
                             to->tag["KangkaiSlash"] = data;
